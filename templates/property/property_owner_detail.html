@@ -1,0 +1,32 @@
+{% extends "accounts_base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Property Owner Details</h2>
+
+    <div class="card mb-3" style="max-width: 540px;">
+        <div class="row no-gutters">
+            <div class="col-md-4">
+                {% if owner.image %}
+                    <img src="{{ owner.image.url }}" class="img-fluid rounded-start" alt="Owner Image">
+                {% else %}
+                    <img src="https://via.placeholder.com/150" class="img-fluid rounded-start" alt="No Image">
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{ owner.first_name }} {{ owner.last_name }}</h5>
+                    <p class="card-text"><strong>Email:</strong> {{ owner.email }}</p>
+                    <p class="card-text"><strong>Phone:</strong> {{ owner.phone_number }}</p>
+                    <p class="card-text"><strong>Address:</strong> {{ owner.address }}</p>
+                    
+                    <a href="{% url 'update_property_owner' owner.id %}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="{% url 'delete_property_owner' owner.id %}" class="btn btn-danger btn-sm">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'property_owner_list' %}" class="btn btn-secondary">Back to List</a>
+</div>
+{% endblock %}

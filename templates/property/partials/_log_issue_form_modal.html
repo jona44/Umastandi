@@ -1,0 +1,33 @@
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+<div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-circle-fill"></i> Log an Issue
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    onclick="document.getElementById('modal-container').innerHTML = '';"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" 
+                    enctype="multipart/form-data" 
+                    hx-post="{% url 'log_issue' %}" 
+                    hx-target="#modal-container" 
+                    hx-swap="outerHTML">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn btn-primary mt-2">
+                        <i class="bi bi-send"></i> Submit Issue
+                    </button>
+                    <button type="button" class="btn btn-secondary mt-2"
+                            onclick="document.getElementById('modal-container').innerHTML = '';">
+                        Cancel
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

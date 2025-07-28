@@ -1,0 +1,74 @@
+<!-- property/partials/issue_table.html -->
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Property</th>
+                <th>Tenant</th>
+                <th>Status</th>
+                <th>Type</th>
+                <th>Priority</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in issues %}
+            <tr id="issue-{{ issue.id }}">
+                <td class="fw-bold">#{{ issue.id }}</td>
+                <td>{{ issue.property.name }}</td>
+                <td>{{ issue.tenant|default:"<em class='text-muted'>No tenant</em>" }}</td>
+                <td>
+                    {% if issue.status == 'open' %}
+                        <span class="badge bg-danger">
+                            <i class="bi bi-exclamation-circle me-1"></i>Open
+                        </span>
+                    {% elif issue.status == 'in_progress' %}
+                        <span class="badge bg-warning text-dark">
+                            <i class="bi bi-hourglass-split me-1"></i>In Progress
+                        </span>
+                    {% elif issue.status == 'resolved' %}
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle me-1"></i>Resolved
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ issue.status|title }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ issue.get_issue_type_display|default:issue.issue_type }}</td>
+                <td>
+                    {% if issue.priority == 'high' %}
+                        <span class="badge bg-danger-subtle text-danger">High</span>
+                    {% elif issue.priority == 'medium' %}
+                        <span class="badge bg-warning-subtle text-warning">Medium</span>
+                    {% elif issue.priority == 'low' %}
+                        <span class="badge bg-success-subtle text-success">Low</span>
+                    {% else %}
+                        <span class="badge bg-light text-dark">{{ issue.priority|title }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ issue.created_at|date:"M d, Y" }}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary"
+                            hx-get="{% url 'update_issue_status' issue.id %}"
+                            hx-target="#modal-body"
+                            hx-swap="innerHTML"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal"
+                            title="Manage Issue">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox display-6"></i>
+                    <div>No issues found</div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

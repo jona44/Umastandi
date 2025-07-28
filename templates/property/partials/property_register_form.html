@@ -1,0 +1,78 @@
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        <i class="bi bi-people-fill me-2"></i>  Property Owner
+    </h5>
+   
+</div>
+<form method="post" 
+    hx-post="{% url 'register_property' %}" 
+    hx-target="#modal-body" 
+    hx-swap="innerHTML">
+    {% csrf_token %}
+    <div class="row">
+        <div class="form-group mb-3 col">
+            <label for="id_property_owner">
+                <i class="bi bi-person"></i> Property Owner
+            </label>
+            {{ form.property_owner }}
+            {{ form.property_owner.errors }}
+        </div>
+        <div class="form-group mb-3 col">
+            <label for="id_name">
+                <i class="bi bi-house-door"></i> Property Name
+            </label>
+            {{ form.name }}
+            {{ form.name.errors }}
+        </div>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="id_address"><i class="bi bi-geo-alt"></i> Address</label>
+        {{ form.address }}
+        {{ form.address.errors }}
+    </div>
+
+    <div class="row">
+        <div class="form-group mb-3 col-md-6">
+            <label for="id_type"><i class="bi bi-ui-checks"></i> Property Type</label>
+            {{ form.type }}
+            {{ form.type.errors }}
+        </div>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="id_details"><i class="bi bi-card-text"></i> Details</label>
+        {{ form.details }}
+        {{ form.details.errors }}
+    </div>
+
+    <div class="row row-cols-2">
+        <div class="form-group mb-3">
+            <label for="id_bedrooms"><i class="bi bi-moon"></i> Bedrooms</label>
+            {{ form.bedrooms }}
+            {{ form.bedrooms.errors }}
+        </div>
+        <div class="form-group mb-3">
+            <label for="id_bathrooms"><i class="bi bi-droplet"></i> Bathrooms</label>
+            {{ form.bathrooms }}
+            {{ form.bathrooms.errors }}
+        </div>
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="id_square_footage"><i class="bi bi-aspect-ratio"></i> Square Footage</label>
+        {{ form.square_footage }}
+        {{ form.square_footage.errors }}
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="id_tenant"><i class="bi bi-person-badge"></i> Tenant (optional)</label>
+        {{ form.tenant }}
+        {{ form.tenant.errors }}
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">
+        <i class="bi bi-save"></i> Save Property
+    </button>
+</form>

@@ -1,0 +1,143 @@
+<!-- property/issue_history.html -->
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Issue History</h2>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary" onclick="exportIssues()">
+                <i class="bi bi-download me-1"></i>Export
+            </button>
+            <button class="btn btn-primary" 
+                    hx-get="{% url 'log_issue' %}"
+                    hx-target="#modal-body"
+                    hx-swap="innerHTML"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal">
+                <i class="bi bi-plus-circle me-1"></i>New Issue
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form class="row g-3" 
+                  hx-get="{% url 'issue_history' %}" 
+                  hx-target="#issue-table" 
+                  hx-push-url="true"
+                  hx-trigger="change from:select, submit">
+                
+                <!-- Status Filter -->
+                <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All</option>
+                        {% for val, label in status_choices %}
+                            <option value="{{ val }}" {% if filters.status == val %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Priority Filter -->
+                <div class="col-md-3">
+                    <label class="form-label">Priority</label>
+                    <select name="priority" class="form-select">
+                        <option value="">All</option>
+                        {% for val, label in priority_choices %}
+                            <option value="{{ val }}" {% if filters.priority == val %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Type Filter -->
+                <div class="col-md-3">
+                    <label class="form-label">Issue Type</label>
+                    <select name="issue_type" class="form-select">
+                        <option value="">All</option>
+                        {% for val, label in type_choices %}
+                            <option value="{{ val }}" {% if filters.issue_type == val %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Search -->
+                <div class="col-md-3">
+                    <label class="form-label">Search</label>
+                    <div class="input-group">
+                        <input type="text" 
+                               name="search" 
+                               class="form-control" 
+                               placeholder="Search issues..."
+                               value="{{ filters.search|default:'' }}"
+                               hx-trigger="keyup changed delay:300ms">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Summary -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <small class="text-muted">
+            Showing {{ issues.count }} result{{ issues.count|pluralize }}
+        </small>
+        <div id="loading-spinner" class="htmx-indicator">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+        </div>
+    </div>
+
+    <!-- Issue Table -->
+    <div id="issue-table" class="card">
+        <div class="card-body p-0">
+            {% include 'property/partials/_issue_table.html' %}
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+function exportIssues() {
+    const form = document.querySelector('form');
+    const formData = new FormData(form);
+    const params = new URLSearchParams(formData);
+    window.location.href = '{% url "export_issues" %}?' + params.toString();
+}
+
+// Loading indicator
+document.body.addEventListener('htmx:beforeRequest', function(evt) {
+    if (evt.target.id === 'issue-table') {
+        evt.target.style.opacity = '0.6';
+    }
+});
+
+document.body.addEventListener('htmx:afterRequest', function(evt) {
+    if (evt.target.id === 'issue-table') {
+        evt.target.style.opacity = '1';
+    }
+});
+</script>
+
+<style>
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
+</style>
+{% endblock %}

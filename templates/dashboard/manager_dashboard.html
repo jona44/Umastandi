@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load payment_extras %}
+{% block content %}
+<div class="container mt-4" style="max-width: 1200px;">
+
+    <!-- Dashboard Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-speedometer2"></i> Dashboard</h2> 
+        <h4>Welcome, {{request.user.first_name|default:"Manager"}}</h4>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row text-center mb-4">
+        <div class="col-md mb-1">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5><i class="bi bi-house-door"></i> Total Properties</h5> <h2>{{ total_properties }}</h2>
+                    
+                    <button 
+                        class="btn btn-success btn-sm mt-2 ms-2"
+                        hx-get="{% url 'register_property' %}"
+                        hx-target="#modal-body"
+                        hx-trigger="click"
+                        hx-swap="innerHTML"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal">
+                        <i class="bi bi-plus-circle"></i> Add Property
+                    </button>
+                    <!-- Load Properties Button -->
+                    <button 
+                        class="btn btn-outline-success btn-sm mt-2"
+                        hx-get="{% url 'property_list' %}"
+                        hx-target="#modal-body"
+                        hx-swap="innerHTML"
+                        
+                        hx-push-url="{% url 'property_list' %}">
+                            View Property List
+                    </button>
+
+                
+
+                </div>
+            </div>
+        </div>
+    <div class="col-md mb-1">
+        <div class="card bg-success text-white">
+            <div class="card-body ">
+                <h5><i class="bi bi-people"></i> Total Tenants</h5> 
+                <h2>{{ total_tenants }}</h2>
+                
+                <button
+                    class="btn btn-success btn-sm mt-2"
+                    hx-get="{% url 'register' %}"
+                    hx-target="#modal-body"
+                    hx-trigger="click"
+                    hx-swap="innerHTML"
+                    data-bs-toggle="modal"
+                    data-bs-target="#mainModal" >
+                    <i class="bi bi-person-plus"></i> Register Tenant
+                </button>
+
+                <button
+                    class="btn btn-primary btn-sm mt-2"
+                    hx-get="{% url 'tenant_list' %}"
+                    hx-target="#modal-body"
+                    hx-trigger="click"
+                    hx-swap="innerHTML"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal">
+                    <i class="bi bi-list-ul"></i> View Tenants
+                </button>
+
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md">
+        <div class="card bg-warning text-dark">
+            <div class="card-body ">
+                <h5><i class="bi bi-exclamation-triangle"></i> Open Issues</h5>
+                <h2>{{ open_issues }}</h2>
+
+                <span class="btn btn-sm btn-danger"><i class="bi bi-exclamation-circle"></i> Open {{ open_issues }}</span>
+                <span class="btn btn-sm btn-secondary"><i class="bi bi-hourglass-split"></i> In Progress {{ in_progress_issues }}</span>
+                <span class="btn btn-sm btn-success"><i class="bi bi-check-circle"></i> Resolved {{ resolved_issues }}</span>
+            </div>
+        </div>
+    </div>
+<!-- Issues Summary -->
+<div class="mb-1">
+    <button  class="btn btn-primary btn-sm mt-2" 
+        hx-get="{% url 'register_property_owner' %}" 
+        hx-target="#modal-body" 
+        hx-trigger="click" 
+        hx-swap="innerHTML"
+        data-bs-toggle="modal" 
+        data-bs-target="#modal">
+    + Register Property Owner<i class="bi bi-person-badge"></i>
+    </button>
+    <a href="{% url 'issue_history' %}" class="btn btn-outline-success btn-sm mt-2">
+        <i class="bi bi-clock-history"></i> View Full Issue History
+    </a>
+    <!-- Trigger button -->
+    <button 
+        class="btn btn-info btn-sm mt-2" 
+        hx-get="{% url 'create_manager' %}" 
+        hx-target="#modal-body"
+        hx-trigger="click"
+        hx-swap="innerHTML"
+        data-bs-toggle="modal"
+        data-bs-target="#modal">
+        <i class="bi bi-person-plus"></i> Add Manager
+    </button>
+
+</div>
+    <!-- Recent Issues Table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-bug"></i> Recent Issues
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Property</th>
+            <th>Tenant</th>
+            <th>Status</th>
+            <th>Issue Type</th>
+            <th>Priority</th>
+            <th>Created</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for issue in recent_issues %}
+        <tr>
+            <td>{{ issue.id }}</td>
+            <td>{{ issue.property.name }}</td>
+            <td>{{ issue.tenant }}</td>
+            <td>
+                {% if issue.status == 'open' %}
+                    <span class="badge bg-danger">Open</span>
+                {% elif issue.status == 'in_progress' %}
+                    <span class="badge bg-warning text-dark">In Progress</span>
+                {% elif issue.status == 'resolved' %}
+                    <span class="badge bg-success">Resolved</span>
+                {% else %}
+                    <span class="badge bg-secondary">{{ issue.status }}</span>
+                {% endif %}
+            </td>
+            <td>{{ issue.issue_type }}</td>
+            <td>
+                    {% if issue.priority == 'high' %}
+                        <span class="badge bg-danger-subtle text-danger">High</span>
+                    {% elif issue.priority == 'medium' %}
+                        <span class="badge bg-warning-subtle text-warning">Medium</span>
+                    {% elif issue.priority == 'low' %}
+                        <span class="badge bg-success-subtle text-success">Low</span>
+                    {% else %}
+                        <span class="badge bg-light text-dark">{{ issue.priority|title }}</span>
+                    {% endif %}
+                </td>
+            <td>{{ issue.created_at|date:"Y-m-d" }}</td>
+            <td>
+                <button class="btn btn-sm btn-outline-warning"
+                        hx-get="{% url 'update_issue_status' issue.id %}"
+                        hx-target="#modal-body"
+                        hx-swap="innerHTML"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal">
+                    <i class="bi bi-pencil-square"></i> Manage
+                </button>
+                <button class="btn btn-sm btn-outline-info"
+                        hx-get=""                             
+                        hx-target="#modal-body"
+                        hx-swap="innerHTML"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal">
+                    <i class="bi bi-play-circle"></i> Media
+                </button>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="text-center">No issues found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+        </div>
+    </div>
+
+
+    <!-- upcoming Payments -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5><i class="bi bi-cash-stack"></i> Upcoming Payments (All)</h5>
+    </div>
+    <div class="card-body">
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tenant</th>
+            <th>Property</th>
+            <th>Amount</th>
+            <th>Month</th>
+            <th>Status</th>
+            <th>Reference</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for payment in combined_payments %}
+        <tr>
+            <td>{{ payment.tenant_profile_id }}</td>
+            <td>{{ payment.tenant }}</td>
+            <td>{{ payment.property }}</td>
+            <td>R{{ payment.amount }}</td>
+            <td>{{ payment.for_month }}</td>
+            <td>
+                {% if payment.status == 'Paid' %}
+                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Paid</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle"></i> Unpaid</span>
+                {% endif %}
+            </td>
+                <td>{{ payment.reference }}</td>
+            <td>
+                {% if payment.status == 'Unpaid' %}
+                    <button class="btn btn-outline-success btn-sm "
+                        hx-get="{% url 'capture_payment' payment.lease_id payment.for_month %}"
+                        hx-target="#modal-body"
+                        hx-swap="innerHTML"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal">
+                        <i class="bi bi-plus-circle"></i> Add Payment
+                    </button>
+
+                {% endif %}
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="8">No payment data available</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+
+

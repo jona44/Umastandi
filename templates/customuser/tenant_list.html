@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4"></h2>
+        <i class="bi bi-people-fill me-2"></i>Tenant List
+    </h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="badge bg-primary me-2 fs-6">
+                <i class="bi bi-person-lines-fill me-1"></i>Total: {{ tenant_count }}
+            </span>
+        </div>
+    </div>
+                <button
+                    class="btn btn-success btn-sm mt-2"
+                    hx-get="{% url 'register' %}"
+                    hx-target="#modal-body"
+                    hx-trigger="click"
+                    hx-swap="innerHTML"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal" >
+                    <i class="bi bi-person-plus"></i> Register Tenant
+                </button>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th><i class="bi bi-person-circle"></i> ID</th>
+                <th><i class="bi bi-person-circle"></i> Profile Image</th>
+                <th><i class="bi bi-person-badge"></i> Tenant Name</th>
+                <th><i class="bi bi-telephone"></i> Phone Number</th>
+                <th><i class="bi bi-card-text"></i> National ID</th>
+                <th><i class="bi bi-gear"></i> Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tenant in tenants %}
+                <tr>
+                    <td>{{ tenant.user.id }}</td>
+                    <td>
+                        {% if tenant.image %}
+                            <img src="{{ tenant.image.url }}" alt="Image" width="50" height="50" class="rounded-circle">
+                        {% else %}
+                            <span class="text-muted"><i class="bi bi-person-x"></i> No Image</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ tenant.user }}</td>
+                    <td>
+                        <i class="bi bi-telephone-fill me-1"></i>{{ tenant.phone_number }}
+                    </td>
+                    <td>
+                        <i class="bi bi-card-heading me-1"></i>{{ tenant.national_id }}
+                    </td>
+                    <td>
+                        <a href="{% url 'tenant_profile_detail' tenant.user.id %}" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i> Details
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+{% endblock %}

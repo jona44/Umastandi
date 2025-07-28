@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block title %}Select Tenant for Payment{% endblock %}
+
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Select Tenant for Payment</h2>
+
+    <form method="get" class="mb-3">
+        <div class="form-group">
+            <label for="for_month">Select Month:</label>
+            <select name="for_month" id="for_month" class="form-control">
+                {% for value, label in form.fields.for_month.choices %}
+                    <option value="{{ value }}" {% if selected_month == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Filter Tenants</button>
+    </form>
+
+    {% if selected_month %}
+        {% if form.fields.tenant.queryset.exists %}
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="for_month" value="{{ selected_month }}">
+
+                <div class="form-group mt-2">
+                    {{ form.tenant.label_tag }}
+                    {{ form.tenant }}
+                </div>
+                <button type="submit" class="btn btn-success mt-2">Proceed to Payment</button>
+            </form>
+        {% else %}
+            <div class="alert alert-info">All tenants have already paid for {{ selected_month }}.</div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

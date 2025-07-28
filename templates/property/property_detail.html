@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ property.name }} (Owned by: {{ property.property_owner.get_full_name }})</h2>
+    <p><strong>Address:</strong> {{ property.address }}</p>
+    <p><strong>Type:</strong> {{ property.get_type_display }}</p>
+    <p><strong>Bathrooms:</strong> {{ property.bathrooms }}</p>
+    <p><strong>Square Footage:</strong> {{ property.square_footage }} sqft</p>
+    <p><strong>Amenities:</strong>
+        {% if property.amenities %}
+            <ul>
+            {% for key, value in property.amenities.items %}
+                <li><strong>{{ key|capfirst }}:</strong> {{ value }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <em>No amenities listed.</em>
+        {% endif %}
+    </p>
+    <p><strong>Details:</strong> {{ property.details }}</p>
+    <p><strong>Occupied:</strong>
+        {% if property.is_occupied %}
+            <span class="badge bg-success">Yes</span>
+        {% else %}
+            <span class="badge bg-secondary">No</span>
+        {% endif %}
+    </p>
+    <p><strong>Created At:</strong> {{ property.created_at }}</p>
+
+    <a href="{% url 'property_update' property.id %}" class="btn btn-warning">Update Property</a>
+    <button 
+        class="btn btn-outline-success"
+        hx-get="{% url 'property_list' %}"
+        hx-target="#modal-body"
+        hx-swap="innerHTML"
+        hx-push-url="{% url 'property_list' %}">
+        View Property List
+    </button>
+    <a href="{% url 'property_delete' property.id %}?next={{ request.path }}" class="btn btn-danger">Remove Property</a>
+
+    <!-- Maintenance Issues Section -->
+    <div class="card mt-5">
+        <div class="card-header">
+            <h4><i class="bi bi-tools"></i> Maintenance Issues</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Total Maintenance Cost:</strong> R{{ total_cost }}</p>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Logged By</th>
+                        <th>Cost</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in issues %}
+                    <tr>
+                        <td>{{ issue.id }}</td>
+                        <td>{{ issue.get_issue_type_display }}</td>
+                        <td><span class="badge bg-info text-dark">{{ issue.get_priority_display }}</span></td>
+                        <td>
+                            {% if issue.status == 'open' %}
+                                <span class="badge bg-danger"><i class="bi bi-exclamation-circle"></i> Open</span>
+                            {% elif issue.status == 'in_progress' %}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> In Progress</span>
+                            {% elif issue.status == 'resolved' %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> Resolved</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ issue.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ issue.user.user.get_full_name }}</td>
+                        <td>R{{ issue.cost|default:"0.00" }}</td>
+                        <td>{{ issue.created_at|date:"Y-m-d" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No issues logged for this property.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load form_tags %}
+
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Assign Tenant to Property</h2>
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ property_obj.name }}</h5>
+            <p><strong>Address:</strong> {{ property_obj.address }}</p>
+            <p><strong>Type:</strong> {{ property_obj.get_type_display }}</p>
+            <p><strong>Currently Occupied:</strong> 
+                {% if property_obj.is_occupied %}
+                    <span class="badge bg-danger">Yes</span>
+                {% else %}
+                    <span class="badge bg-success">No</span>
+                {% endif %}
+            </p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.tenant.label_tag }}
+                    {{ form.tenant|add_class:"form-select" }}
+                </div>
+                <button type="submit" class="btn btn-primary">Assign Tenant</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+<form method="POST"
+    hx-post="{% url 'update_issue_status' issue.id %}"
+    hx-target="#modal-body"
+    hx-swap="innerHTML">
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label for="status" class="form-label">Status</label>
+        <select name="status" id="status" class="form-select" onchange="toggleCostField()">
+            {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if value == issue.status %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="resolution_notes" class="form-label">Resolution Notes</label>
+        <textarea name="resolution_notes" id="resolution_notes" class="form-control">{{ issue.resolution_notes }}</textarea>
+    </div>
+
+    <div class="mb-3" id="cost-field" style="display: {% if issue.status == 'resolved' %}block{% else %}none{% endif %};">
+        <label for="cost" class="form-label">Cost (Rands)</label>
+        <input type="number" name="cost" id="cost" step="0.01" min="0" class="form-control" value="{{ issue.cost|default:'' }}">
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-check2-circle"></i> Save Changes
+        </button>
+    </div>
+</form>
+
+<script>
+    function toggleCostField() {
+        const status = document.getElementById('status').value;
+        const costField = document.getElementById('cost-field');
+        if (status === 'resolved') {
+            costField.style.display = 'block';
+        } else {
+            costField.style.display = 'none';
+        }
+    }
+
+    // Run on load in case form is pre-filled
+    document.addEventListener('DOMContentLoaded', toggleCostField);
+</script>

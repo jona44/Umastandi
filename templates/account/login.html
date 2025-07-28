@@ -1,0 +1,42 @@
+{% extends "accounts_base.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load allauth account %}
+
+{% block head %}
+{% endblock head %}
+
+{% block head_title %}
+    {% trans "Sign In" %}
+{% endblock head_title %}
+
+{% block content %}
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="card shadow" style="max-width: 600px; width: 100%;">
+            <div class="card-header text-center">
+                <h1 class="h4 mb-0">{% trans "Sign In" %}</h1>
+            </div>
+            <div class="card-body">
+                {% if not SOCIALACCOUNT_ONLY %}
+                    <p class="lead text-center">Umastanda</p>
+                {% endif %}
+                {% url 'account_login' as login_url %}
+                <form method="post" action="{{ login_url }}" class="mt-4">
+                    {% csrf_token %}
+                    {{ redirect_field }}
+                    <div class="form-group mb-3">
+                        {{ form|crispy }}
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block w-100">{% trans "Sign In" %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_body %}
+    {{ block.super }}
+    {% if PASSKEY_LOGIN_ENABLED %}
+        {% include "mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}
+    {% endif %}
+{% endblock %}

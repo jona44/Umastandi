@@ -1,0 +1,46 @@
+<div class="container mt-4">
+    <h2>Issues</h2>
+<!-- Reported Issues -->
+<div >
+     <a href="{% url 'log_issue' %}" class="btn btn-primary mb-3">Report a New Issue</a>
+</div>
+<div class="card mb-4">
+    <div class="card-header">My Reported Issues</div>
+    <div class="card-body p-0">
+        <!-- Add this block temporarily to test -->
+        <table class="table mb-0 table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Reported On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for issue in issues %}
+                   <tr>
+                        <td>{{ issue.type }}</td>
+                        <td>{{ issue.description|truncatechars:30 }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if issue.status == 'resolved' %}bg-success
+                                {% elif issue.status == 'in_progress' %}bg-warning
+                                {% else %}bg-secondary{% endif %}">
+                                {{ issue.status|capfirst }}
+                            </span>
+                        </td>
+                        <td>{{ issue.priority|capfirst }}</td>
+                        <td>{{ issue.created_at|date:"Y-m-d" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="text-center">No issues reported.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+  

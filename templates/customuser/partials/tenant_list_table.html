@@ -1,0 +1,48 @@
+<div class="modal-header">
+    <h5 class="modal-title">
+        <i class="bi bi-people-fill me-2"></i> Tenant List
+    </h5>
+   
+</div>
+<div class="modal-body">
+    <div class="mb-3">
+        <span class="badge bg-primary fs-6">
+            <i class="bi bi-person-lines-fill me-1"></i> Total: {{ tenant_count }}
+        </span>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Profile Image</th>
+                <th>Tenant Name</th>
+                <th>Phone Number</th>
+                <th>National ID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tenant in tenants %}
+                <tr>
+                    <td>{{ tenant.user.id }}</td>
+                    <td>
+                        {% if tenant.image %}
+                            <img src="{{ tenant.image.url }}" width="50" height="50" class="rounded-circle">
+                        {% else %}
+                            <i class="bi bi-person-x text-muted"></i> No Image
+                        {% endif %}
+                    </td>
+                    <td>{{ tenant.user }}</td>
+                    <td>{{ tenant.phone_number }}</td>
+                    <td>{{ tenant.national_id }}</td>
+                    <td>
+                        <a href="{% url 'tenant_profile_detail' tenant.user.id %}" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i> Details
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

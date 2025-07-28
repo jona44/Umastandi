@@ -1,0 +1,36 @@
+<div class="modal fade" id="deactivateModal" tabindex="-1" aria-labelledby="deactivateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deactivateModalLabel">Deactivate {{ user.get_full_name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+          onclick="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to deactivate this tenant and make their property available again?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal" onclick="closeModal()">Cancel</button>
+
+        <form method="POST"
+              hx-post="{% url 'deactivate_user' user.id %}"
+              hx-target="#modal-body"
+              hx-swap="innerHTML">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Deactivate</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = new bootstrap.Modal(document.getElementById('deactivateModal'));
+  modal.show();
+
+  function closeModal() {
+    const backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) backdrop.remove();
+    document.getElementById('modal-body').innerHTML = '';
+  }
+</script>

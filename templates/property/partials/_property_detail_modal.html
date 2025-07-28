@@ -1,0 +1,9 @@
+<div>
+    <h5>{{ property.name }}</h5>
+    <p><strong>Owner:</strong> {{ property.property_owner.get_full_name }}</p>
+    <p><strong>Type:</strong> {{ property.get_type_display }}</p>
+    <p><strong>Occupied:</strong> {{ property.is_occupied|yesno:"Yes,No" }}</p>
+    <p><strong>Bedrooms:</strong> {{ property.bedrooms }}</p>
+    <p><strong>Bathrooms:</strong> {{ property.bathrooms }}</p>
+    <p><strong>Square Footage:</strong> {{ property.square_footage }}</p>
+</div>

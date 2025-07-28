@@ -1,0 +1,18 @@
+  {% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4 mx-auto">
+        <h1>Delete Property</h1>
+        <p>Are you sure you want to delete the property "{{ property.address }}"?</p>
+        <div class="card " style="width: 18rem;">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <a href="{% url 'property_list' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+  </div>
+
+  <p>This action cannot be undone.</p>
+{% endblock %}

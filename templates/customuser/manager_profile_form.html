@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% block title %}Create Manager Profile{% endblock %}
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2>
+        <i class="bi bi-person-plus"></i>
+        Create  Manager Profile
+    </h2>
+   <form method="post">
+  {% csrf_token %}
+
+  <div class="mb-3">
+    <label class="form-label"><strong>{{ form.properties.label }}</strong></label>
+
+    <!-- ✅ Select/Deselect All Buttons -->
+    <div class="mb-2">
+      <button type="button" class="btn btn-sm btn-outline-primary me-1" onclick="selectAllCheckboxes(true)">
+        <i class="bi bi-check2-square"></i> Select All
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" onclick="selectAllCheckboxes(false)">
+        <i class="bi bi-square"></i> Deselect All
+      </button>
+    </div>
+
+    <!-- ✅ Scrollable Checkbox List -->
+    <div class="checkbox-scroll">
+      {% for checkbox in form.properties %}
+        <div class="form-check mb-1">
+          {{ checkbox.tag }}
+          <label class="form-check-label" for="{{ checkbox.id_for_label }}">
+            {{ checkbox.choice_label }}
+          </label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary mt-3">Save</button>
+</form>
+
+<!-- ✅ Select All Script -->
+<script>
+  function selectAllCheckboxes(checked) {
+    const checkboxes = document.querySelectorAll('input[name="properties"]');
+    checkboxes.forEach(cb => cb.checked = checked);
+  }
+</script>
+
+<!-- ✅ Optional Styles -->
+<style>
+  .checkbox-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+  }
+</style>
+
+
+{% endblock %}

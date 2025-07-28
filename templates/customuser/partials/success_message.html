@@ -1,0 +1,24 @@
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  {{ message }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+          onclick="document.getElementById('modal-container').innerHTML = ''"></button>
+</div>
+
+<script>
+    setTimeout(() => {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('mainModal'));
+        if (modal) modal.hide();
+        // Optionally reload part of the page or navigate
+        // window.location.href = "{% url 'tenant_dashboard' %}";
+    }, 1500);
+</script>
+<div class="alert alert-success">Manager created successfully.</div>
+<script>
+    setTimeout(() => {
+        const modalEl = document.querySelector('#modal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+        // Optionally trigger reload of manager list
+        htmx.trigger('#manager-list', 'refresh');
+    }, 1000);
+</script>

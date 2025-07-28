@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Property Owners</h1>
+        <div>
+            <span class="badge bg-success fs-6">Property Owners: {{ owner_count }}</span>
+        </div>
+    </div>
+    <table class="table table-striped" style="width:100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Address</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for owner in owners %}
+                <tr>
+                    <td>{{ owner.first_name }} {{ owner.last_name }}</td>
+                    <td>{{ owner.email }}</td>
+                    <td>{{ owner.address }}</td>
+                    <td>{{ owner.phone_number }}</td>
+                    <td>
+                        <ul style="list-style: none; margin: 0; padding: 0; display: flex; gap: 8px;">
+                            <li><a href="{% url 'property_owner_detail' owner.id %}">View</a></li>
+                        <form action="{% url 'delete_property_owner' owner.id %}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this property owner?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link p-0 m-0 align-baseline" style="color: #dc3545; text-decoration: underline;">Delete</button>
+                        </form>
+                        </ul>
+                    </td> 
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No property owners found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'register_property_owner' %}">Register Property Owner</a>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+
+<div class="modal-header">
+    <h5 class="modal-title">Capture Payment for {{ lease.user.user.email }}</h5>
+    
+</div>
+
+<div class="modal-body">
+    <form 
+        method="POST"
+        hx-post="{% url 'capture_payment' lease.id for_month %}"
+        hx-target="#modal-body"
+        hx-swap="innerHTML"
+    >
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success w-100 mt-3">
+            <i class="bi bi-cash-coin"></i> Submit Payment
+        </button>
+    </form>
+</div>
