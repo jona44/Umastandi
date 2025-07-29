@@ -18,18 +18,18 @@ import os
 
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-if DEBUG:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
-else:
-    # Production
-    ALLOWED_HOSTS = [
-        'umastandi.onrender.com',
-        os.environ.get('RENDER_EXTERNAL_HOSTNAME', ''),
-    ]
-    # Remove empty strings
-    ALLOWED_HOSTS = [host for host in ALLOWED_HOSTS if host]
+# if DEBUG:
+#     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+# else:
+#     # Production
+#     ALLOWED_HOSTS = [
+#         'umastandi.onrender.com',
+#         os.environ.get('RENDER_EXTERNAL_HOSTNAME', ''),
+#     ]
+#     # Remove empty strings
+#     ALLOWED_HOSTS = [host for host in ALLOWED_HOSTS if host]
 
-
+ALLOWED_HOSTS = ['umastandi.onrender.com']
 # Application definition
 
 INSTALLED_APPS = [
