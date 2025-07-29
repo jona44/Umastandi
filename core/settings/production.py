@@ -4,7 +4,7 @@ from .base import *
 import dj_database_url
 import os
 
-DEBUG = False # This is why the error occurs
+DEBUG = True # This is why the error occurs
 
 ALLOWED_HOSTS = [
     'umastandi.onrender.com',
