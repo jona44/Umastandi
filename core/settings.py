@@ -14,9 +14,20 @@ SECRET_KEY =os.environ.get('SECRET_KEY')
 # 'django-insecure-2upyjpj%)!+4p$_g^c=o1cq@%lq0!i-2gnp3#7k-z7jo%@5zlz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG","False") == "True"
+import os
 
-ALLOWED_HOST = ['umastandi.onrender.com', 'localhost', '127.0.0.1']
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+
+if DEBUG:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+else:
+    # Production
+    ALLOWED_HOSTS = [
+        'umastandi.onrender.com',
+        os.environ.get('RENDER_EXTERNAL_HOSTNAME', ''),
+    ]
+    # Remove empty strings
+    ALLOWED_HOSTS = [host for host in ALLOWED_HOSTS if host]
 
 
 # Application definition
