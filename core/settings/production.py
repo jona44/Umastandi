@@ -28,7 +28,7 @@ else:
             'NAME': BASE_DIR / 'prod_db.sqlite3',
         }
     }
-
+ROOT_URLCONF = 'core.urls'
 
 # Security settings
 CSRF_COOKIE_SECURE = True
