@@ -185,38 +185,17 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'first_name*', 'last_name*', 'password1*', 'p
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 # Email configuration
-if IS_PRODUCTION:
-    # Production email settings
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
-    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
-    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
-else:
-    # Development email settings (console backend)
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Security settings for production
-if IS_PRODUCTION:
-    # HTTPS settings
-    SECURE_SSL_REDIRECT = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    
-    # Security headers
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
-    
-    # Session security
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    
-    # HSTS settings
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Important - must be True for port 587
+EMAIL_USE_SSL = False  # Must be False when using TLS
+EMAIL_HOST_USER = 'manyadzatocky@gmail.com'
+EMAIL_HOST_PASSWORD = 'fxjz ysms mode esht'
+DEFAULT_FROM_EMAIL = 'manyadzatocky@gmail.com'
+
 
 # Logging configuration
 # Create logs directory if it doesn't exist (for production)

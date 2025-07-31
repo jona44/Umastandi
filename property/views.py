@@ -4,19 +4,19 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from customuser.models import CustomUser
-from .forms import  IssueForm, LeaseAgreementForm, PaymentCaptureForm,  PropertyForm, PropertyOwnerForm, SelectTenantPaymentForm
-from .models import LeaseAgreement, Payment, Property, PropertyOwner, TenantProfile, Issue
+from .forms import  IssueForm, LeaseAgreementForm,PaymentCaptureForm,  PropertyForm, PropertyOwnerForm, SelectTenantPaymentForm
+from .models import LeaseAgreement,  Payment,  Property, PropertyOwner,  TenantProfile,  Issue
 from datetime import datetime
 from django.utils.dateparse import parse_date
 from django.db import IntegrityError
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
-from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 import csv
 from django.db.models import Q
+from django.core.mail import EmailMessage, get_connection,send_mail
+import ssl
+import certifi
 
 @login_required
 def register_property(request):

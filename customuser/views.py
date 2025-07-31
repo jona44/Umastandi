@@ -5,9 +5,8 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from django.core.mail import send_mail
 from django.forms import ValidationError
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -18,14 +17,15 @@ from .forms import (
     ManagerProfileForm,
     SetPasswordForm,
     TenantProfileForm,
-    LeaseAgreementForm,
+    LeaseAgreementForm
 )
 from django.views.decorators.http import require_http_methods
-
+from django.core.mail import EmailMessage, get_connection ,send_mail
+import ssl
+import certifi
 from .utils import redirect_after_login
 
 logger = logging.getLogger(__name__)
-
 
 @login_required
 def register_tenant(request):
@@ -41,20 +41,21 @@ def register_tenant(request):
             activation_link = request.build_absolute_uri(
                 reverse('activate_account', args=[user.activation_token])
             )
+
+            # Use Django's simple send_mail function
             send_mail(
                 subject='Activate Your Account',
                 message=f'Click the link to activate your account: {activation_link}',
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
+                fail_silently=False,
             )
 
-            # Return the tenant profile form in the same modal
             profile_form = TenantProfileForm(initial={'user': user})
             return render(request, 'customuser/partials/tenant_profile_form.html', {
                 'form': profile_form,
                 'user': user
             })
-
     else:
         form = CustomUserRegistrationForm()
 
@@ -259,6 +260,7 @@ def logout_view(request):
     return redirect('login')
 
 
+
 def activate_account(request, token):
     user = get_object_or_404(CustomUser, activation_token=token, is_active=False)
 
@@ -319,7 +321,7 @@ def deactivate_user(request, user_id):
             return HttpResponseBadRequest("Only tenant users can be deactivated.")
 
         user.is_active = False
-        user.is_stuff = False
+        user.is_staff = False # type: ignore
         user.save()
 
         # Free properties

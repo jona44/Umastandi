@@ -2,6 +2,10 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import ssl
+
+# ⚠️ This disables SSL certificate verification globally.
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def main():
