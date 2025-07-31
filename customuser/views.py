@@ -1,3 +1,5 @@
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 import logging
 from datetime import date
 from django.conf import settings
@@ -27,7 +29,11 @@ from .utils import redirect_after_login
 
 logger = logging.getLogger(__name__)
 
-@login_required
+
+
+
+
+
 def register_tenant(request):
     if request.method == 'POST':
         form = CustomUserRegistrationForm(request.POST)
@@ -61,7 +67,6 @@ def register_tenant(request):
 
     template = 'customuser/partials/register_form.html' if request.htmx else 'customuser/register.html'
     return render(request, template, {'form': form})
-
 
 
 

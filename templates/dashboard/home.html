@@ -1,16 +1,22 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Welcome{% endblock %}
 
 {% block content %}
-<div class="container mt-5 d-flex justify-content-center align-items-center">
-    <div class="text-center  mb-4 bg-light rounded-3 p-4  justify-content-center align-items-center ">
-        <h1 class="display-4">Welcome to Umastandi</h1>
-        
-        <hr class="my-4">
-        
-            <a class="btn btn-primary btn-lg me-2" href="{% url 'login' %}" role="button">Login</a>
-
+<div class="container">
+    <div class="row min-vh-100 d-flex justify-content-center align-items-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center p-4 p-sm-5">
+                    {# Make sure you have a logo at 'static/images/logo.png' or update the path #}
+                    <img src="{% static 'logos/logo.png' %}" alt="Umastandi Logo" class="img-fluid mb-4" style="max-width: 150px;">
+                    <h1 class="fw-light">Welcome to uMa<strong><span class="text-light">Standi</span></strong></h1>
+                    <hr class="my-4">
+                    <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">Login</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
