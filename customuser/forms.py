@@ -2,7 +2,6 @@ from django import forms
 from customuser.models import CustomUser
 from property.models import Property, PropertyManager
 from property.models import TenantProfile
-from django_select2.forms import ModelSelect2MultipleWidget
 
 
 class CustomUserRegistrationForm(forms.ModelForm):

@@ -15,10 +15,6 @@ urlpatterns = [
     path('property/', include('property.urls')),
 
 
- 
-    path("select2/", include("django_select2.urls")),  # ✅ ADD THIS LINE
-
-
 
     path('activate/<str:token>/', customuser_views.activate_account, name='activate_account'),
     path('login/', auth_views.LoginView.as_view(template_name='account/login.html'), name='login'),
