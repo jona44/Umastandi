@@ -1,13 +1,8 @@
 
-<div class="modal-header">
-    <h5 class="modal-title">
-        <i class="bi bi-people-fill me-2"></i>  Property Owner
-    </h5>
-   
-</div>
+
 <form method="post" 
     hx-post="{% url 'register_property' %}" 
-    hx-target="#modal-body" 
+    hx-target="#tables" 
     hx-swap="innerHTML">
     {% csrf_token %}
     <div class="row">

@@ -15,8 +15,9 @@ from django.views.decorators.http import require_http_methods
 import csv
 from django.db.models import Q
 from django.core.mail import EmailMessage, get_connection,send_mail
-import ssl
-import certifi
+from django.db.models import Sum
+
+
 
 @login_required
 def register_property(request):
@@ -29,7 +30,7 @@ def register_property(request):
                 response['HX-Trigger'] = 'ownerAddedSuccess'
                 return response
             messages.success(request, "Property registered successfully.")
-            return redirect('property_list')
+            return redirect('property_detail', property.id)
     else:
         form = PropertyForm()
 
@@ -37,8 +38,19 @@ def register_property(request):
     return render(request, template, {'form': form})
 
 
-from django.template.loader import render_to_string
-from django.http import HttpResponse
+@login_required
+def property_detail(request, propety_id):
+    property = get_object_or_404(Property, pk=propety_id)
+    issues = Issue.objects.filter(property=property).order_by('-created_at')  # latest first
+    total_cost = issues.aggregate(Sum('cost'))['cost__sum'] or 0 # type: ignore
+
+    template = 'property/partials/_property_detail_modal.html' if request.htmx else 'property/property_detail.html'
+    return render(request, template, {
+        'property': property,
+        'issues': issues,
+        'total_cost': total_cost,
+    })
+
 
 @login_required
 def property_list(request):
@@ -60,8 +72,8 @@ def property_list(request):
 
 
 @login_required
-def property_update(request, pk):
-    property_instance = Property.objects.get(pk=pk)
+def property_update(request, propety_id):
+    property_instance = Property.objects.get(pk=propety_id)
     if request.method == 'POST':
         form = PropertyForm(request.POST, instance=property_instance)
         if form.is_valid():
@@ -73,27 +85,14 @@ def property_update(request, pk):
     return render(request, 'property/property_update.html', {'form': form, 'property': property_instance})
 
 
-from django.db.models import Sum
 
-@login_required
-def property_detail(request, pk):
-    property = get_object_or_404(Property, pk=pk)
-    issues = Issue.objects.filter(property=property).order_by('-created_at')  # latest first
-    total_cost = issues.aggregate(Sum('cost'))['cost__sum'] or 0 # type: ignore
-
-    template = 'property/partials/_property_detail_modal.html' if request.htmx else 'property/property_detail.html'
-    return render(request, template, {
-        'property': property,
-        'issues': issues,
-        'total_cost': total_cost,
-    })
 
 
 
 
 @login_required
-def property_delete(request, pk):
-    property_instance = Property.objects.get(pk=pk)
+def property_delete(request, propety_id):
+    property_instance = Property.objects.get(pk=propety_id)
     if request.method == 'POST':
         property_instance.delete()
         messages.success(request, "Property deleted successfully.")
@@ -144,9 +143,6 @@ def log_issue(request):
     return render(request, 'property/log_issue.html', context)
 
 
-
-
-@login_required
 def issue_history(request):
     """Enhanced issue history view with search functionality"""
     
@@ -189,9 +185,7 @@ def issue_history(request):
     }
     
     if request.htmx:
-        return render(request, 'property/partials/issue_table.html', context)
-    
-    return render(request, 'property/issue_history.html', context)
+        return render(request, 'property/partials/_issue_history.html', context)
 
 
 @require_http_methods(["GET", "POST"])
