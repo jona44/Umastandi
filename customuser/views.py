@@ -29,10 +29,6 @@ from .utils import redirect_after_login
 logger = logging.getLogger(__name__)
 
 
-
-
-
-
 def register_tenant(request):
     if request.method == 'POST':
         form = CustomUserRegistrationForm(request.POST)
@@ -55,16 +51,11 @@ def register_tenant(request):
                 recipient_list=[user.email],
                 fail_silently=False,
             )
-
-            profile_form = TenantProfileForm(initial={'user': user})
-            return render(request, 'customuser/partials/tenant_profile_form.html', {
-                'form': profile_form,
-                'user': user
-            })
+            return redirect('create_tenant_profile', user_id=user.id)
     else:
         form = CustomUserRegistrationForm()
 
-    template = 'customuser/partials/register_form.html' if request.htmx else 'customuser/register.html'
+    template = 'customuser/partials/_register_tenant_form.html' if request.htmx else 'customuser/register.html'
     return render(request, template, {'form': form})
 
 
@@ -85,7 +76,7 @@ def create_tenant_profile(request, user_id):
                     'message': "Tenant profile successfully created."
                 })
 
-            return redirect('tenant_dashboard')  # or wherever you want
+            return redirect('tenant_profile_detail', user_id=user.id) # type: ignore
 
     else:
         form = TenantProfileForm(initial={'user': user})

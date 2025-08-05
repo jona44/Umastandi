@@ -26,11 +26,14 @@ def register_property(request):
         if form.is_valid():
             property = form.save()
             if request.htmx:
-                response = HttpResponse(status=204)
-                response['HX-Trigger'] = 'ownerAddedSuccess'
-                return response
-            messages.success(request, "Property registered successfully.")
-            return redirect('property_detail', property.id)
+                return HttpResponse("""
+            <div class="alert alert-success">New Property Successfully.</div>
+            <script>
+                setTimeout(() => {
+                    location.reload();
+                }, 800);
+            </script>
+        """)
     else:
         form = PropertyForm()
 
@@ -70,7 +73,6 @@ def property_list(request):
     return render(request, 'property/property_list.html', context)
 
 
-
 @login_required
 def property_update(request, propety_id):
     property_instance = Property.objects.get(pk=propety_id)
@@ -83,11 +85,6 @@ def property_update(request, propety_id):
     else:
         form = PropertyForm(instance=property_instance)
     return render(request, 'property/property_update.html', {'form': form, 'property': property_instance})
-
-
-
-
-
 
 
 @login_required

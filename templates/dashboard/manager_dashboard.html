@@ -50,11 +50,10 @@
                 
                 <button
                     class="btn btn-outline-warning btn-sm mt-2"
-                    hx-get="{% url 'register' %}"
+                    hx-get="{% url 'register_tenant' %}"
                     hx-target="#tables"
                     hx-trigger="click"
-                    hx-swap="innerHTML"
-                     >
+                    hx-swap="innerHTML">
                     <i class="bi bi-person-plus"></i> Register Tenant
                 </button>
 
@@ -166,18 +165,16 @@
                                 <td>
                                     <button class="btn btn-sm btn-outline-warning"
                                             hx-get="{% url 'update_issue_status' issue.id %}"
-                                            hx-target="#modal-body"
-                                            hx-swap="innerHTML"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal">
+                                            hx-target="#tables"
+                                            hx-swap="innerHTML">
+                                            
                                         <i class="bi bi-pencil-square"></i> Manage
                                     </button>
                                     <button class="btn btn-sm btn-outline-info"
-                                            hx-get=""                             
-                                            hx-target="#modal-body"
+                                            hx-get="#"                             
+                                            hx-target="#tables"
                                             hx-swap="innerHTML"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal">
+                                            >
                                         <i class="bi bi-play-circle"></i> Media
                                     </button>
                                 </td>
@@ -231,10 +228,9 @@
                                     {% if payment.status == 'Unpaid' %}
                                         <button class="btn btn-outline-success btn-sm "
                                             hx-get="{% url 'capture_payment' payment.lease_id payment.for_month %}"
-                                            hx-target="#modal-body"
+                                            hx-target="#tables"
                                             hx-swap="innerHTML"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal">
+                                            >
                                             <i class="bi bi-plus-circle"></i> Add Payment
                                         </button>
                                         {% endif %}
