@@ -34,7 +34,7 @@ class SetPasswordForm(forms.Form):
 class TenantProfileForm(forms.ModelForm):
     class Meta:
         model = TenantProfile
-        exclude = ['tenant','property_manager']  
+        exclude = ['user','property_manager']  
         widgets = {
             'image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
             'occupation': forms.TextInput(attrs={'class': 'form-control'}),

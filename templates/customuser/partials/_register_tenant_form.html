@@ -1,9 +1,10 @@
+<!-- register_tenant .html -->
 
 {% load crispy_forms_tags %}
 {% load static %}
 
 
-<div class="modal-body">
+<div id="registration-message"></div>
 
     <form method="post" 
         hx-post="{% url 'register_tenant' %}" 
@@ -15,6 +16,15 @@
             <button type="submit" class="btn btn-primary">
                 <i class="bi bi-person-check-fill"></i> Register
             </button>
+            <div id="registration-spinner" class="htmx-indicator spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
     </form>
-</div>
+
+<style>
+    /* A simple CSS rule to hide the spinner by default */
+    .htmx-indicator {
+        display: none;
+    }
+</style>

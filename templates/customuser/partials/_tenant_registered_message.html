@@ -1,0 +1,11 @@
+<div class="alert alert-success">
+    Email sent to {{ user.email }}. Loading profile form...
+</div>
+
+<div 
+    id="tables"
+    hx-get="{{ redirect_url }}"
+    hx-target="#tables"
+    hx-trigger="load delay:2s"
+    hx-swap="innerHTML">
+</div>

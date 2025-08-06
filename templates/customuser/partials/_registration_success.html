@@ -1,0 +1,13 @@
+<div class="alert alert-success" role="alert">
+    Tenant registered successfully! An activation email has been sent.
+</div>
+
+<p>You can now proceed to create the tenant profile.</p>
+
+<a href="{% url 'create_tenant_profile' user_id=user_id %}"
+    class="btn btn-primary"
+    hx-get="{% url 'create_tenant_profile' user_id=user_id %}"
+    hx-target="#tables"
+    hx-swap="innerHTML">
+    Create Profile
+</a>

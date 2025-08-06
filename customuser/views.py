@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.forms import ValidationError
-from django.http import Http404, HttpResponse, HttpResponseBadRequest
+from django.http import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -22,11 +22,9 @@ from .forms import (
 )
 from django.views.decorators.http import require_http_methods
 from django.core.mail import EmailMessage, get_connection ,send_mail
-import ssl
-import certifi
 from .utils import redirect_after_login
-
 logger = logging.getLogger(__name__)
+from django.http import JsonResponse
 
 
 def register_tenant(request):
@@ -42,7 +40,6 @@ def register_tenant(request):
             activation_link = request.build_absolute_uri(
                 reverse('activate_account', args=[user.activation_token])
             )
-
             # Use Django's simple send_mail function
             send_mail(
                 subject='Activate Your Account',
@@ -51,6 +48,12 @@ def register_tenant(request):
                 recipient_list=[user.email],
                 fail_silently=False,
             )
+
+            if request.htmx:
+                # Return an HTMX fragment with a success message
+                # and a link to the next step.
+                return render(request, 'customuser/partials/_registration_success.html', {'user_id': user.id})
+
             return redirect('create_tenant_profile', user_id=user.id)
     else:
         form = CustomUserRegistrationForm()
@@ -62,30 +65,55 @@ def register_tenant(request):
 
 @login_required
 def create_tenant_profile(request, user_id):
-    user = get_object_or_404(CustomUser, id=user_id, user_type='tenant')
+    try:
+        user = get_object_or_404(CustomUser, id=user_id, user_type='tenant')
 
-    if request.method == 'POST':
-        form = TenantProfileForm(request.POST)
-        if form.is_valid():
-            profile = form.save(commit=False)
-            profile.user = user
-            profile.save()
-
+        if hasattr(user, 'tenantprofile'):
+            # The profile already exists, so we should redirect to the next step,
+            # which is creating the lease agreement.
+            redirect_url = reverse('create_lease_agreement', kwargs={'tenant_profile_id': user.tenantprofile.id}) # type: ignore
             if request.htmx:
-                return render(request, 'customuser/partials/success_message.html', {
-                    'message': "Tenant profile successfully created."
-                })
+                response = HttpResponse(status=204)
+                response['HX-Redirect'] = redirect_url
+                return response
+            return redirect(redirect_url)
 
-            return redirect('tenant_profile_detail', user_id=user.id) # type: ignore
+        if request.method == 'POST':
+            form = TenantProfileForm(request.POST)
+            if form.is_valid():
+                profile = form.save(commit=False)
+                profile.user = user
+                profile.save()
 
-    else:
-        form = TenantProfileForm(initial={'user': user})
+                # --- NEW: Redirect to the lease agreement creation view ---
+                # The user's tenantprofile.id is needed for the URL.
+                redirect_url = reverse('create_lease_agreement', kwargs={'tenant_profile_id': profile.id}) 
 
-    return render(request, 'customuser/partials/tenant_profile_form.html', {
-        'form': form,
-        'user': user
-    })
+                if request.htmx:
+                    # Set the HX-Redirect header for HTMX
+                    response = HttpResponse(status=204)
+                    response['HX-Redirect'] = redirect_url
+                    return response
 
+                return redirect(redirect_url)
+            # If the form is not valid, we'll fall through and re-render the form with errors.
+
+        else:
+            form = TenantProfileForm()
+
+        return render(request, 'customuser/partials/_tenant_profile_form.html', {
+            'form': form,
+            'user': user
+        })
+
+    except Exception as e:
+        # ... your existing error handling code
+        logger.error("Error creating tenant profile", exc_info=True)
+        if request.htmx:
+            return render(request, 'customuser/partials/error_message.html', {
+                'message': "Something went wrong while creating the profile."
+            }, status=500)
+        return HttpResponseServerError("Something went wrong")
 
 
 @login_required
