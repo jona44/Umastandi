@@ -140,7 +140,7 @@ def update_tenant_profile(request, user_id):
     else:
         form = TenantProfileForm(instance=profile)
 
-    return render(request, 'customuser/profile_update.html', {
+    return render(request, 'customuser/partials/_tenant_profile_update.html', {
         'form': form,
         'profile': profile,
         'user': user
@@ -163,7 +163,7 @@ def tenant_list(request):
         html = render_to_string('customuser/partials/tenant_list_table.html', context, request=request)
         return HttpResponse(html)
         
-    return render(request, 'customuser/tenant_list.html', context)
+    return render(request, 'customuser/partials/_tenant_list.html', context)
 
 @login_required
 def delete_tenant_profile(request, user_id):

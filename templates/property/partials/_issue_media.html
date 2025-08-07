@@ -1,0 +1,10 @@
+{% if issue.image %}
+<div class="text-center p-3">
+    <h5>Issue #{{ issue.id }} Media</h5>
+    <img src="{{ issue.image.url }}" alt="Issue Image" class="img-fluid rounded border" style="max-height: 400px;">
+</div>
+{% else %}
+<div class="text-center p-3">
+    <h5>No media uploaded for this issue.</h5>
+</div>
+{% endif %}

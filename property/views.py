@@ -75,8 +75,8 @@ def property_list(request):
 
 
 @login_required
-def property_update(request, propety_id):
-    property_instance = Property.objects.get(pk=propety_id)
+def property_update(request, property_id):
+    property_instance = Property.objects.get(pk=property_id)
     if request.method == 'POST':
         form = PropertyForm(request.POST, instance=property_instance)
         if form.is_valid():
@@ -291,6 +291,11 @@ def export_issues(request):
     return response
 
 
+def issue_media_view(request, issue_id):
+    issue = get_object_or_404(Issue, id=issue_id)
+    return render(request, "property/partials/_issue_media.html", {"issue": issue})
+
+
 @login_required 
 def create_lease_agreement(request, tenant_profile_id):     
     tenant = get_object_or_404(TenantProfile, id=tenant_profile_id)      
@@ -419,7 +424,7 @@ def capture_payment(request, lease_id, for_month):
             'for_month': for_month,
         })
 
-    html = render_to_string("property/partials/payment_form_modal.html", {
+    html = render_to_string("property/partials/_payment_form.html", {
         'form': form,
         'lease': lease,
         'for_month': for_month,

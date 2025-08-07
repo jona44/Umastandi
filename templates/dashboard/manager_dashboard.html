@@ -91,6 +91,7 @@
         </div>
     </div>
 </div>
+
 <!------------------------------------- Issues Summary ------------------------------------------>
 
     <div class="mb-1">
@@ -178,10 +179,9 @@
                                         <i class="bi bi-pencil-square"></i> Manage
                                     </button>
                                     <button class="btn btn-sm btn-outline-info"
-                                            hx-get="#"                             
+                                            hx-get="{% url 'issue_media_view' issue.id %}"
                                             hx-target="#tables"
-                                            hx-swap="innerHTML"
-                                            >
+                                            hx-swap="innerHTML">
                                         <i class="bi bi-play-circle"></i> Media
                                     </button>
                                 </td>

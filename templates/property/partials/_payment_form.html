@@ -11,7 +11,7 @@
     <form 
         method="POST"
         hx-post="{% url 'capture_payment' lease.id for_month %}"
-        hx-target="#modal-body"
+        hx-target="#tables"
         hx-swap="innerHTML"
     >
         {% csrf_token %}

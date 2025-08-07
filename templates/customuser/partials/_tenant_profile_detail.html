@@ -88,14 +88,16 @@
                 <a href="{% url 'delete_tenant_profile' user.id %}" class="btn btn-danger">
                     <i class="bi bi-trash"></i> Delete
                 </a>
-                <a href="{% url 'update_tenant_profile' user.id %}" class="btn btn-primary">
+
+                <button class="btn btn-primary"
+                    hx-target="#tables"
+                    hx-swap="innerHTML"
+                    hx-post="{% url 'update_tenant_profile' user.id %}" >
                     <i class="bi bi-pencil-square"></i> Edit Profile
-                </a>
+                </button>
+
                 <a href="{% url 'tenant_list' %}" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Back to List
-                </a>
-                <a href="{% url 'create_lease_agreement' tenant_profile.id %}" class="btn btn-dark">
-                    <i class="bi bi-file-earmark-plus"></i> Create Lease Agreement
                 </a>
                 <a href="{% url 'lease_agreement_detail' tenant_profile.id %}" class="btn btn-outline-dark">
                     <i class="bi bi-file-earmark-text"></i> View Lease Agreement
