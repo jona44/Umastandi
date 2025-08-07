@@ -14,7 +14,7 @@
 
         <form method="POST"
               hx-post="{% url 'deactivate_user' user.id %}"
-              hx-target="#modal-body"
+              hx-target="#tables"
               hx-swap="innerHTML">
             {% csrf_token %}
             <button type="submit" class="btn btn-danger">Yes, Deactivate</button>
@@ -24,13 +24,4 @@
   </div>
 </div>
 
-<script>
-  const modal = new bootstrap.Modal(document.getElementById('deactivateModal'));
-  modal.show();
 
-  function closeModal() {
-    const backdrop = document.querySelector('.modal-backdrop');
-    if (backdrop) backdrop.remove();
-    document.getElementById('modal-body').innerHTML = '';
-  }
-</script>

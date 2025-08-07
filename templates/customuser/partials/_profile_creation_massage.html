@@ -1,0 +1,13 @@
+<div class="alert alert-success" role="alert">
+    Lease agreement created successfully!
+</div>
+
+<p>You can now proceed to review or manage this lease.</p>
+
+<a href="{% url 'lease_detail_view' lease_id=lease.id %}"
+    class="btn btn-success"
+    hx-get="{% url 'lease_detail_view' lease_id=lease.id %}"
+    hx-target="#tables"
+    hx-swap="innerHTML">
+    View Lease Agreement
+</a>

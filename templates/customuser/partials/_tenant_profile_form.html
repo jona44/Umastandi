@@ -8,7 +8,7 @@
     <form method="POST" 
         enctype="multipart/form-data"
         hx-post="{% url 'create_tenant_profile' user.id %}"
-        hx-target="#modal-body"
+        hx-target="#tables"
         hx-swap="innerHTML">
         {% csrf_token %}
         {{ form|crispy }}

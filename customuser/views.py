@@ -63,20 +63,19 @@ def register_tenant(request):
 
 
 
-@login_required
+
+
+logger = logging.getLogger(__name__)
+
+
 def create_tenant_profile(request, user_id):
     try:
         user = get_object_or_404(CustomUser, id=user_id, user_type='tenant')
 
+        # If profile already exists, redirect to lease agreement
         if hasattr(user, 'tenantprofile'):
-            # The profile already exists, so we should redirect to the next step,
-            # which is creating the lease agreement.
-            redirect_url = reverse('create_lease_agreement', kwargs={'tenant_profile_id': user.tenantprofile.id}) # type: ignore
-            if request.htmx:
-                response = HttpResponse(status=204)
-                response['HX-Redirect'] = redirect_url
-                return response
-            return redirect(redirect_url)
+            profile = user.tenantprofile # type: ignore
+            return redirect('create_lease_agreement', tenant_profile_id=profile.id)
 
         if request.method == 'POST':
             form = TenantProfileForm(request.POST)
@@ -84,19 +83,9 @@ def create_tenant_profile(request, user_id):
                 profile = form.save(commit=False)
                 profile.user = user
                 profile.save()
-
-                # --- NEW: Redirect to the lease agreement creation view ---
-                # The user's tenantprofile.id is needed for the URL.
-                redirect_url = reverse('create_lease_agreement', kwargs={'tenant_profile_id': profile.id}) 
-
-                if request.htmx:
-                    # Set the HX-Redirect header for HTMX
-                    response = HttpResponse(status=204)
-                    response['HX-Redirect'] = redirect_url
-                    return response
-
-                return redirect(redirect_url)
-            # If the form is not valid, we'll fall through and re-render the form with errors.
+                
+                # Simple redirect for both HTMX and regular requests
+                return redirect('create_lease_agreement', tenant_profile_id=profile.id)
 
         else:
             form = TenantProfileForm()
@@ -107,15 +96,15 @@ def create_tenant_profile(request, user_id):
         })
 
     except Exception as e:
-        # ... your existing error handling code
         logger.error("Error creating tenant profile", exc_info=True)
         if request.htmx:
-            return render(request, 'customuser/partials/error_message.html', {
+            return render(request, 'customuser/partials/_error_message.html', {
                 'message': "Something went wrong while creating the profile."
             }, status=500)
-        return HttpResponseServerError("Something went wrong")
+        return HttpResponseServerError("Something went wrong") 
+    
 
-
+    
 @login_required
 def tenant_profile_detail(request, user_id):
     # Get the tenant user
@@ -302,6 +291,7 @@ def activate_account(request, token):
         form = SetPasswordForm()
 
     return render(request, 'customuser/set_password_after_activation.html', {'form': form})
+
 
 
 from django.utils import timezone  # ensure timezone import is present
