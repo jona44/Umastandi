@@ -43,12 +43,12 @@ def register_property(request):
 
 
 @login_required
-def property_detail(request, propety_id):
-    property = get_object_or_404(Property, pk=propety_id)
+def property_detail(request, property_id):
+    property = get_object_or_404(Property, pk=property_id)
     issues = Issue.objects.filter(property=property).order_by('-created_at')  # latest first
     total_cost = issues.aggregate(Sum('cost'))['cost__sum'] or 0 # type: ignore
 
-    template = 'property/partials/_property_detail_modal.html' if request.htmx else 'property/property_detail.html'
+    template = 'property/partials/_property_detail.html' if request.htmx else 'property/property_detail.html'
     return render(request, template, {
         'property': property,
         'issues': issues,
@@ -89,14 +89,19 @@ def property_update(request, propety_id):
 
 
 @login_required
-def property_delete(request, propety_id):
-    property_instance = Property.objects.get(pk=propety_id)
+def property_delete(request, property_id):  # fixed typo
+    property_instance = get_object_or_404(Property, pk=property_id)
+
     if request.method == 'POST':
         property_instance.delete()
+        if request.htmx:
+            return HttpResponse("<div class='alert alert-success'>Property deleted successfully.</div>")
         messages.success(request, "Property deleted successfully.")
         return redirect('property_list')
-    return render(request, 'property/property_confirm_delete.html', {'property': property_instance})
 
+    return render(request, 'property/partials/_property_confirm_delete.html', {
+        'property': property_instance
+    })
 
 
 @login_required

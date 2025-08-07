@@ -42,7 +42,14 @@
                 <td>{{ property.bathrooms }}</td>
                 <td>{{ property.square_footage }}</td>
                 <td>
-                    <a href="{% url 'property_detail' property.id %}" class="btn btn-primary btn-sm">Details</a>
+                    <button 
+                        class="btn btn-primary btn-sm"
+                        hx-get="{% url 'property_detail' property.id %}" 
+                        hx-target="#tables"
+                        hx-swap="innerHTML"
+                        hx-trigger="click">
+                        <i class="bi bi-eye-fill"></i> View
+                    </button>
                 </td>
             </tr>
             {% endfor %}

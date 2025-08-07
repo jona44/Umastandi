@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+
 
 {% block content %}
 <div class="container mt-4">
@@ -37,15 +37,8 @@
         hx-push-url="{% url 'property_list' %}">
         View Property List
     </button>
-    <
-    <button 
-        class="btn btn-outline-success"
-        hx-get="{% url 'property_delete' property.id %}"
-        hx-target="#tables"
-        hx-swap="innerHTML"
-        hx-push-url="{% url 'property_delete' property.id %}">
-        Remove Property
-    </button>
+    <a href="{% url 'property_delete' property.id %}?next={{ request.path }}" class="btn btn-danger">Remove Property</a>
+
     <!-- Maintenance Issues Section -->
     <div class="card mt-5">
         <div class="card-header">

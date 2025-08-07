@@ -1,18 +1,30 @@
-  {% extends 'base.html' %}
+<div class="container mt-4 mx-auto">
+    <h1>Delete Property</h1>
+    <p>Are you sure you want to delete the property "{{ property.address }}"?</p>
 
-{% block content %}
-    <div class="container mt-4 mx-auto">
-        <h1>Delete Property</h1>
-        <p>Are you sure you want to delete the property "{{ property.address }}"?</p>
-        <div class="card " style="width: 18rem;">
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                    <a href="{% url 'property_list' %}" class="btn btn-secondary">Cancel</a>
-                </form>
-            </div>
-  </div>
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <form 
+                method="post"
+                hx-post="{% url 'property_delete' property.id %}" 
+                hx-target="#tables" 
+                hx-swap="innerHTML"
+            >
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
 
-  <p>This action cannot be undone.</p>
-{% endblock %}
+            <!-- Cancel button OUTSIDE form to avoid accidental submit -->
+            <button 
+                class="btn btn-secondary mt-2"
+                hx-get="{% url 'property_detail' property.id %}" 
+                hx-target="#tables"
+                hx-swap="innerHTML"
+            >
+                <i class="bi bi-eye-fill"></i> Cancel
+            </button>
+        </div>
+    </div>
+
+    <p class="text-muted mt-2">This action cannot be undone.</p>
+</div>

@@ -1,0 +1,29 @@
+   
+
+dhdhdhdhdh
+    <div class="container mt-4 mx-auto">
+        <h1>Delete Property</h1>
+        <p>Are you sure you want to delete the property "{{ property.address }}"?</p>
+        <div class="card " style="width: 18rem;">
+            <div class="card-body">
+                <form method="post" 
+                    hx-trigger="submit" 
+                    hx-post="{% url 'property_delete' property.id %}" 
+                    hx-target="#tables" 
+                    hx-swap="innerHTML">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button 
+                        class="btn btn-primary "
+                        hx-get="{% url 'property_detail' property.id %}" 
+                        hx-target="#tables"
+                        hx-swap="innerHTML"
+                        hx-trigger="click">
+                        <i class="bi bi-eye-fill"></i> Cancel
+                    </button>
+                </form>
+            </div>
+        </div>
+        <p>This action cannot be undone.</p>
+    </div>
+
