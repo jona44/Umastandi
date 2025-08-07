@@ -1,16 +1,28 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load payment_extras %}
+
+{% block extra_head %}
+<style>
+    #tables {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4" style="max-width: 1200px;">
-
-    <!-- Dashboard Header -->
+    <div class="fixed-container  ">
+    <!------------------------------------ Dashboard Header ------------------------------------>
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-speedometer2"></i> Dashboard</h2> 
         <h4>Welcome, {{request.user.first_name|default:"Manager"}}</h4>
     </div>
 
-    <!-- Summary Cards -->
+    <!--------------------------------------Summary Cards ----------------------------------------->
+
     <div class="row text-center mb-4">
         <div class="col-md mb-1">
             <div class="card bg-primary text-white">
@@ -32,12 +44,9 @@
                         hx-get="{% url 'property_list' %}"
                         hx-target="#tables"
                         hx-swap="innerHTML"
-                        
                         hx-push-url="{% url 'property_list' %}">
-                            View Property List
+                        View Property List
                     </button>
-
-                
 
                 </div>
             </div>
@@ -67,7 +76,6 @@
                     <i class="bi bi-list-ul"></i> View Tenants
                 </button>
 
-
             </div>
         </div>
     </div>
@@ -76,14 +84,15 @@
             <div class="card-body ">
                 <h5><i class="bi bi-exclamation-triangle"></i> Open Issues</h5>
                 <h2>{{ open_issues }}</h2>
-
                 <span class="btn btn-sm btn-danger"><i class="bi bi-exclamation-circle"></i> Open {{ open_issues }}</span>
                 <span class="btn btn-sm btn-secondary"><i class="bi bi-hourglass-split"></i> In Progress {{ in_progress_issues }}</span>
                 <span class="btn btn-sm btn-success"><i class="bi bi-check-circle"></i> Resolved {{ resolved_issues }}</span>
             </div>
         </div>
     </div>
-<!-- Issues Summary -->
+</div>
+<!------------------------------------- Issues Summary ------------------------------------------>
+
     <div class="mb-1">
         <button  class="btn btn-primary btn-sm mt-2" 
             hx-get="{% url 'register_property_owner' %}" 
@@ -109,10 +118,9 @@
             <i class="bi bi-person-plus"></i> Add Manager
         </button>
     </div>
-    <div class="show" >
-
-    </div>
-    <!-- Recent Issues Table -->
+        
+    <!------------------------------------------ Recent Issues Table--------------------------------->
+            
         <div  class="container" id="tables">
             <div class="card mb-4">
                 <div class="card-header">
@@ -167,7 +175,6 @@
                                             hx-get="{% url 'update_issue_status' issue.id %}"
                                             hx-target="#tables"
                                             hx-swap="innerHTML">
-                                            
                                         <i class="bi bi-pencil-square"></i> Manage
                                     </button>
                                     <button class="btn btn-sm btn-outline-info"
@@ -188,7 +195,7 @@
             </div>
             
 
-<!-- upcoming Payments -->
+<!--------------------------------------- upcoming Payments ----------------------------------->
     
             <div class="card mb-4">
                 <div class="card-header">
@@ -246,7 +253,6 @@
         </div>   
     </div>
 </div>
-
 
 {% endblock %}
 
