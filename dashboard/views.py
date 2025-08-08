@@ -103,7 +103,7 @@ def manager_dashboard(request):
         
     }
 
-    return render(request, 'dashboard/manager_dashboard.html', context)
+    return render(request, 'dashboard/manager_dashboard.html', context)   
 
 
 def home(request):

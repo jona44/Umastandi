@@ -374,13 +374,11 @@ def capture_payment(request, lease_id, for_month):
     lease = get_object_or_404(LeaseAgreement, id=lease_id)
 
     if Payment.objects.filter(lease=lease, for_month=for_month).exists():
-        return HttpResponse(
-            render_to_string("property/partials/alert.html", {
-                "message": f"A payment for {for_month} already exists.",
-                "alert_type": "warning"
-            }),
-            status=400
-        )
+        alert_html = render_to_string("property/partials/alert.html", {
+            "message": f"A payment for {for_month} already exists.",
+            "alert_type": "warning"
+        })
+        return HttpResponse(alert_html, status=400)
 
     if request.method == 'POST':
         form = PaymentCaptureForm(request.POST)
@@ -396,28 +394,33 @@ def capture_payment(request, lease_id, for_month):
                 if tenant_email:
                     send_mail(
                         subject="Payment Confirmation",
-                        message=f"Dear {lease.user.user.get_full_name()},\n\n" # type: ignore
-                                f"Your payment of R{payment.amount} for {payment.for_month} has been received.\n\n"
-                                f"Thank you.",
+                        message=(
+                            f"Dear {lease.user.user.get_full_name()},\n\n"  # type: ignore
+                            f"Your payment of R{payment.amount} for {payment.for_month} has been received.\n\n"
+                            f"Thank you."
+                        ),
                         from_email=None,
                         recipient_list=[tenant_email],
                         fail_silently=True,
                     )
 
-                response = render_to_string("property/partials/alert.html", {
-                    "message": "Payment successfully captured.",
-                    "alert_type": "success"
-                }, request=request)
+                if request.htmx:
+                    return HttpResponse("""
+                        <div class="alert alert-success">Payment captured successfully.</div>
+                        <script>
+                            setTimeout(() => {
+                                location.reload();
+                            }, 800);
+                        </script>
+                    """)
 
-                return HttpResponse(response)
+                return HttpResponse("Payment captured.")  # fallback response
             except IntegrityError:
-                return HttpResponse(
-                    render_to_string("property/partials/alert.html", {
-                        "message": f"Payment already exists for {for_month}.",
-                        "alert_type": "danger"
-                    }),
-                    status=400
-                )
+                error_html = render_to_string("property/partials/alert.html", {
+                    "message": f"Payment already exists for {for_month}.",
+                    "alert_type": "danger"
+                })
+                return HttpResponse(error_html, status=400)
     else:
         form = PaymentCaptureForm(initial={
             'amount': lease.rent_amount,
@@ -430,8 +433,6 @@ def capture_payment(request, lease_id, for_month):
         'for_month': for_month,
     }, request=request)
     return HttpResponse(html)
-
-
 @login_required
 def register_property_owner(request):
     if request.method == 'POST':
