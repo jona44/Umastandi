@@ -1,10 +1,24 @@
-{% if issue.image %}
-<div class="text-center p-3">
-    <h5>Issue #{{ issue.id }} Media</h5>
-    <img src="{{ issue.image.url }}" alt="Issue Image" class="img-fluid rounded border" style="max-height: 400px;">
+# /templates/issues/partials/issue_media.html
+<div class="p-3">
+    <h5 class="text-center">Media for Issue #{{ issue.id }}</h5>
+    {% if media %}
+        <div class="row">
+            {% for item in media %}
+                <div class="col-md-6 mb-3 text-center">
+                    {% if item.is_image %}
+                        <img src="{{ item.file.url }}" alt="Issue Image" class="img-fluid rounded border" style="max-height: 300px;">
+                    {% elif item.is_video %}
+                        <video controls style="max-width: 100%; max-height: 300px;">
+                            <source src="{{ item.file.url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    {% else %}
+                        <a href="{{ item.file.url }}" class="btn btn-secondary">Download File</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center">No media uploaded for this issue.</p>
+    {% endif %}
 </div>
-{% else %}
-<div class="text-center p-3">
-    <h5>No media uploaded for this issue.</h5>
-</div>
-{% endif %}

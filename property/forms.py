@@ -25,24 +25,25 @@ class PropertyForm(forms.ModelForm):
             'square_footage': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
+# /issues/forms.py
 class IssueForm(forms.ModelForm):
+    
     class Meta:
         model = Issue
-        fields = ['priority',  'description','issue_type' ,'image']
+        fields = ['priority', 'description', 'issue_type', 'image']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
             'image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
             'issue_type': forms.Select(attrs={'class': 'form-control'}),
             'priority': forms.Select(attrs={'class': 'form-control'}),
-            
         }
         labels = {
             'priority': 'Priority',
             'description': 'Description',
             'issue_type': 'Issue Type',
-            'image': 'Upload Image',
+            'image': 'Upload Main Image',
         }
-        
+
 
 
 class LeaseAgreementForm(forms.ModelForm):

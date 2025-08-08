@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from customuser.models import CustomUser
 from .forms import  IssueForm, LeaseAgreementForm,PaymentCaptureForm,  PropertyForm, PropertyOwnerForm, SelectTenantPaymentForm
-from .models import LeaseAgreement,  Payment,  Property, PropertyOwner,  TenantProfile,  Issue
+from .models import IssueMedia, LeaseAgreement,  Payment,  Property, PropertyOwner,  TenantProfile,  Issue
 from datetime import datetime
 from django.utils.dateparse import parse_date
 from django.db import IntegrityError
@@ -114,7 +114,6 @@ def log_issue(request):
         return redirect('tenant_dashboard')
 
     lease = LeaseAgreement.objects.filter(user=tenant, is_active=True).first()
-
     if not lease or not lease.property:
         messages.error(request, "You are not assigned to a property through a lease.")
         return redirect('tenant_dashboard')
@@ -125,26 +124,30 @@ def log_issue(request):
         form = IssueForm(request.POST, request.FILES)
         if form.is_valid():
             issue = form.save(commit=False)
-            issue.tenant = tenant
             issue.user = tenant
             issue.property = property_instance
             issue.save()
 
+            # ✅ Save uploaded media files
+            for f in request.FILES.getlist('media_files'):
+                IssueMedia.objects.create(issue=issue, file=f)
+
             if request.htmx:
-                return HttpResponse('<script>window.location.reload()</script>')  # Close modal and reload page
+                return HttpResponse('<script>window.location.reload()</script>')
             messages.success(request, "Your issue has been logged successfully.")
             return redirect('tenant_dashboard')
     else:
         form = IssueForm()
 
     context = {'form': form}
-
     if request.htmx:
         html = render_to_string('property/partials/_log_issue_form_modal.html', context, request=request)
         return HttpResponse(html)
 
     return render(request, 'property/log_issue.html', context)
 
+
+# ----------------------------------Issue history view--------------------------------
 
 def issue_history(request):
     """Enhanced issue history view with search functionality"""
@@ -293,7 +296,8 @@ def export_issues(request):
 
 def issue_media_view(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id)
-    return render(request, "property/partials/_issue_media.html", {"issue": issue})
+    media = issue.media.all() # type: ignore
+    return render(request, "property/partials/_issue_media.html", {"issue": issue, "media": media})
 
 
 @login_required 

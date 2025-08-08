@@ -70,21 +70,23 @@ class Issue(models.Model):
     ]
     ISSUE_TYPE_CHOICES = [('electrical', 'Electrical'),('plumbing', 'Plumbing'),('painting', 'Painting'),('windows', 'Windows '),('doors', 'Doors'),('other', 'Other'),]
     
-    priority    = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
+    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
     assigned_to = models.ForeignKey('PropertyManager', on_delete=models.SET_NULL, null=True, blank=True)
-    user      = models.ForeignKey(TenantProfile, on_delete=models.CASCADE, related_name='issues')
-    property    = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='issues')
-    issue_type  = models.CharField(max_length=255, choices=ISSUE_TYPE_CHOICES, default='other', null=True, blank=True)
+    user = models.ForeignKey('TenantProfile', on_delete=models.CASCADE, related_name='issues')
+    property = models.ForeignKey('Property', on_delete=models.CASCADE, related_name='issues')
+    issue_type = models.CharField(max_length=255, choices=ISSUE_TYPE_CHOICES, default='other', null=True, blank=True)
     description = models.TextField()
-    image       = models.ImageField(upload_to='issue_images/', null=True, blank=True)
-    status      = models.CharField(max_length=255, choices=STATUS_CHOICES, default='open')
+    image = models.ImageField(upload_to='issue_images/', null=True, blank=True)  # optional legacy
+    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='open')
     resolved_at = models.DateTimeField(null=True, blank=True)
     resolution_notes = models.TextField(null=True, blank=True)
-    created_at       = models.DateTimeField(auto_now_add=True)
-    cost = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True,validators=[MinValueValidator(Decimal('0.00'))], help_text="Cost of servicing the issue (in Rands)" )
+    created_at = models.DateTimeField(auto_now_add=True)
+    cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,
+        validators=[MinValueValidator(Decimal('0.00'))],
+        help_text="Cost of servicing the issue (in Rands)")
 
     def __str__(self):
-        return f"Issue {self.id} - {self.user.user} - {self.property.name}" # type: ignore
+        return f"Issue {self.id} - {self.user.user} - {self.property.name}"  # type: ignore
 
     def save(self, *args, **kwargs):
         if self.status == 'resolved' and not self.resolved_at:
@@ -98,12 +100,24 @@ class Issue(models.Model):
         return dict(self.PRIORITY_CHOICES).get(self.priority, self.priority)
 
     def get_issue_type_display(self):
-        return dict(self.ISSUE_TYPE_CHOICES).get(self.issue_type, self.issue_type) # type: ignore
-    
-    def total_property_maintenance_cost(property_id): # type: ignore
+        return dict(self.ISSUE_TYPE_CHOICES).get(self.issue_type, self.issue_type)  # type: ignore
+
+    def total_property_maintenance_cost(property_id):  # type: ignore
         return Issue.objects.filter(property_id=property_id).aggregate(
             total=models.Sum('cost')
         )['total'] or 0
+    
+
+class IssueMedia(models.Model):
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='media')
+    file  = models.FileField(upload_to='issue_media/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def is_image(self):
+        return self.file.url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))
+
+    def is_video(self):
+        return self.file.url.lower().endswith(('.mp4', '.webm', '.ogg'))    
 
 
 class Notification(models.Model):
