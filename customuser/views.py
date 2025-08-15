@@ -62,12 +62,6 @@ def register_tenant(request):
     return render(request, template, {'form': form})
 
 
-
-
-
-logger = logging.getLogger(__name__)
-
-
 def create_tenant_profile(request, user_id):
     try:
         user = get_object_or_404(CustomUser, id=user_id, user_type='tenant')
@@ -86,10 +80,10 @@ def create_tenant_profile(request, user_id):
                 
                 # Simple redirect for both HTMX and regular requests
                 return redirect('create_lease_agreement', tenant_profile_id=profile.id)
-
+                print(profile)
         else:
             form = TenantProfileForm()
-
+        
         return render(request, 'customuser/partials/_tenant_profile_form.html', {
             'form': form,
             'user': user
@@ -270,7 +264,6 @@ def edit_manager(request, manager_id):
 def logout_view(request):
     logout(request)
     return redirect('login')
-
 
 
 def activate_account(request, token):

@@ -1,15 +1,7 @@
-<!-- create lease agreement -->
- {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 
-{% block head_title %}
-    {% trans "Create Lease Agreement" %}
-{% endblock head_title %}
-
-
-{% block content %}
-<div class="container mt-5" style="max-width: 900px; padding: 20px; border-radius: 10px;">
+<div class="container mt-5" >
     <h1 class="mb-4 text-center bg-primary text-white p-3">
         <i class="bi bi-file-earmark-text me-2"></i>
         {% trans "Create Lease Agreement" %}
@@ -33,7 +25,14 @@
     <div class="row justify-content-center">
         <div class="col">
             <form 
-                method="post">
+                method="post"
+                action="{% url 'create_lease_agreement' tenant_profile_id=tenant.id %}"
+                {% if request.htmx %}  <!-- Add HTMX attributes if using HTMX -->
+                    hx-post="{% url 'create_lease_agreement' tenant_profile_id=tenant.id %}"
+                    hx-target="#lease-form-container"
+                    hx-swap="outerHTML"
+                {% endif %}
+                id="lease-form">
                 {% csrf_token %}
                 {{ form|crispy }}
                 <button type="submit" class="btn btn-primary w-100 mt-3">
@@ -44,4 +43,3 @@
         </div>
     </div>
 </div>
-{% endblock %}

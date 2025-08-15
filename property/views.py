@@ -1,4 +1,5 @@
 from decimal import Decimal
+import logging
 from django.urls import reverse
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
@@ -10,14 +11,15 @@ from .models import IssueMedia, LeaseAgreement,  Payment,  Property, PropertyOwn
 from datetime import datetime
 from django.utils.dateparse import parse_date
 from django.db import IntegrityError
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_http_methods
 import csv
 from django.db.models import Q
 from django.core.mail import EmailMessage, get_connection,send_mail
 from django.db.models import Sum
-
+logger = logging.getLogger(__name__)
+from django.db import transaction
 
 
 @login_required
@@ -300,17 +302,21 @@ def issue_media_view(request, issue_id):
     return render(request, "property/partials/_issue_media.html", {"issue": issue, "media": media})
 
 
-@login_required 
-def create_lease_agreement(request, tenant_profile_id):     
-    tenant = get_object_or_404(TenantProfile, id=tenant_profile_id)      
+@login_required
+def create_lease_agreement(request: HttpRequest, tenant_profile_id: int) -> HttpResponse:
+    tenant = get_object_or_404(TenantProfile, id=tenant_profile_id)
     
-    tenants_with_lease = LeaseAgreement.objects.values_list('user_id', flat=True)     
-    if tenant.id in tenants_with_lease: # type: ignore
-        if request.htmx:
-            return render(request, 'customuser/partials/_error_message.html', {
-                'message': "This tenant already has a lease agreement."
-            }, status=400)
-        messages.error(request, "This tenant already has a lease agreement.")
+    # Check if tenant already has a lease (more efficient query)
+    if LeaseAgreement.objects.filter(user=tenant).exists():
+        error_message = "This tenant already has a lease agreement."
+        if request.htmx: # type: ignore
+            return render(
+                request,
+                'customuser/partials/_error_message.html',
+                {'message': error_message},
+                status=400
+            )
+        messages.error(request, error_message)
         return redirect('tenant_profile_detail', user_id=tenant.user.id) # type: ignore
 
     if request.method == 'POST':
@@ -318,38 +324,59 @@ def create_lease_agreement(request, tenant_profile_id):
         form.fields['property'].queryset = Property.objects.filter(is_occupied=False) # type: ignore
 
         if form.is_valid():
-            lease = form.save(commit=False)
-            lease.user = tenant
-            property_obj = lease.property 
-
-            property_obj.is_occupied = True
-            property_obj.save() 
-
-            lease.save()
+            try:
+                with transaction.atomic():
+                    lease = form.save(commit=False)
+                    lease.user = tenant
+                    property_obj = lease.property
+                    
+                    property_obj.is_occupied = True
+                    property_obj.save()
+                    lease.save()
+                    
+                    if request.htmx: # type: ignore
+                        response = HttpResponse()
+                        response['HX-Redirect'] = reverse(
+                            'lease_agreement_detail',
+                            kwargs={'tenant_profile_id': tenant.id} # type: ignore
+                        )
+                        return response
+                    
+                    messages.success(request, "Lease Agreement created and property assigned successfully.")
+                    return redirect('lease_agreement_detail', tenant_profile_id=tenant.id) # type: ignore
             
-            if request.htmx:
-                # Return success message or redirect to detail view
-                response = HttpResponse()
-                response['HX-Redirect'] = reverse('lease_agreement_detail', kwargs={'tenant_profile_id': tenant.id}) # type: ignore
-                return response
-            
-            messages.success(request, "Lease Agreement created and property assigned successfully.")
-            return redirect('lease_agreement_detail', tenant_profile_id=tenant.id) # type: ignore
+            except Exception as e:
+                logger.error(f"Error creating lease: {str(e)}")
+                messages.error(request, "An error occurred while creating the lease.")
+                if request.htmx: # type: ignore
+                    return render(
+                        request,
+                        'customuser/partials/_error_message.html',
+                        {'message': "Server error occurred"},
+                        status=500
+                    )
         else:
-            if request.htmx:
-                return render(request, 'property/partials/_create_lease_agreement.html', {
-                    'form': form, 
-                    'tenant': tenant
-                })
+            if request.htmx: # type: ignore
+                return render(
+                    request,
+                    'property/partials/_create_lease_agreement.html',
+                    {'form': form, 'tenant': tenant}
+                )
             messages.error(request, "Please correct the errors below.")
     else:
         form = LeaseAgreementForm()
         form.fields['property'].queryset = Property.objects.filter(is_occupied=False) # type: ignore
 
-    return render(request, 'property/partials/_create_lease_agreement.html', {
-        'form': form, 
-        'tenant': tenant
-    })
+    context = {
+        'form': form,
+        'tenant': tenant,
+        'form_id': 'lease-agreement-form'  # Useful for HTMX targeting
+    }
+    print("Form data:", request.POST)  # Check what data is being submitted
+    print("Form is valid?", form.is_valid())  # Check form validation
+    if not form.is_valid():
+        print("Form errors:", form.errors)  # Show validation errors
+    return render(request, 'property/partials/_create_lease_agreement.html', context)
 
 def lease_agreement_detail(request, tenant_profile_id):
     tenant_profile = get_object_or_404(TenantProfile, id=tenant_profile_id)
