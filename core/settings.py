@@ -174,7 +174,7 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 # Authentication URLs
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
@@ -274,3 +274,21 @@ else:
         }
     }
 
+if IS_PRODUCTION:
+    # Tell Django it's behind a proxy that sets X-Forwarded-Proto
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+    # Force HTTPS redirects
+    SECURE_SSL_REDIRECT = True
+
+    # Secure cookies
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # SameSite handling (important for Chrome/Firefox)
+    SESSION_COOKIE_SAMESITE = "Lax"
+    CSRF_COOKIE_SAMESITE = "Lax"
+
+    # If you ever embed in iframes / cross-site auth, use "None" + Secure instead
+    # SESSION_COOKIE_SAMESITE = "None"
+    # CSRF_COOKIE_SAMESITE = "None"
