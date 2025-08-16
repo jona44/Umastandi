@@ -20,11 +20,14 @@ from .forms import (
     TenantProfileForm,
     LeaseAgreementForm
 )
+
 from django.views.decorators.http import require_http_methods
 from django.core.mail import EmailMessage, get_connection ,send_mail
-from .utils import redirect_after_login
+
 logger = logging.getLogger(__name__)
 from django.http import JsonResponse
+
+
 
 
 def register_tenant(request):
