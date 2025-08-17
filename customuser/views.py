@@ -12,6 +12,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from customuser.models import CustomUser
+from customuser.utils import get_dashboard_redirect
 from property.models import Property, PropertyManager, TenantProfile, LeaseAgreement
 from .forms import (
     CustomUserRegistrationForm,
@@ -28,7 +29,9 @@ logger = logging.getLogger(__name__)
 from django.http import JsonResponse
 
 
-
+@login_required
+def redirect_after_login(request):
+    return redirect(get_dashboard_redirect(request.user))
 
 def register_tenant(request):
     if request.method == 'POST':

@@ -16,6 +16,7 @@ urlpatterns = [
     path('tenant/<int:user_id>/profile/delete/', views.delete_tenant_profile, name='delete_tenant_profile'),
     path('tenant/list/', views.tenant_list, name='tenant_list'),
     path('tenant/<int:user_id>/deactivate/', views.deactivate_user, name='deactivate_user'),
+    path('redirect-after-login/', views.redirect_after_login, name='redirect_after_login'),
 
   
 ]   
