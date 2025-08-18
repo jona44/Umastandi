@@ -144,7 +144,7 @@ def log_issue(request):
 
     context = {'form': form}
     if request.htmx:
-        html = render_to_string('property/partials/_log_issue_form_modal.html', context, request=request)
+        html = render_to_string('property/partials/_log_issue.html')
         return HttpResponse(html)
 
     return render(request, 'property/log_issue.html', context)
@@ -490,19 +490,19 @@ def register_property_owner(request):
     if request.method == 'POST':
         form = PropertyOwnerForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            owner = form.save()
             if request.htmx:
-                # Send an HTMX trigger to show a success toast/message
-                response = HttpResponse(status=204)
-                response['HX-Trigger'] = 'ownerAddedSuccess'
-                return response
+                # Update the owners table directly
+                owners = PropertyOwner.objects.all()
+                context = {"owners": owners}
+                return render(request, "property/partials/_property_owner_list.html", context)
+            
             messages.success(request, "Property Owner registered successfully.")
             return redirect('property_owner_list')
     else:
         form = PropertyOwnerForm()
 
-    return render(request,'property/partials/_register_owner_form.html', {'form': form})
-
+    return render(request, 'property/partials/_register_owner_form.html', {'form': form})
 
 
 
@@ -516,6 +516,11 @@ def property_owner_list(request):
         'owners': owners,
         'owner_count': owner_count,
     }
+    # Return an HTMX fragment when requested, otherwise full page
+    if request.htmx:
+        html = render_to_string('property/partials/_property_owner_list.html', context, request=request)
+        return HttpResponse(html)
+
     return render(request, 'property/property_owner_list.html', context)
 
 
