@@ -18,6 +18,7 @@ import csv
 from django.db.models import Q
 from django.core.mail import EmailMessage, get_connection,send_mail
 from django.db.models import Sum
+from django.conf import settings
 logger = logging.getLogger(__name__)
 from django.db import transaction
 
@@ -399,7 +400,6 @@ def lease_agreement_detail(request, tenant_profile_id):
         'tenant_profile': tenant_profile
     })
 
-
 @login_required
 @require_http_methods(["GET", "POST"])
 def capture_payment(request, lease_id, for_month):
@@ -422,19 +422,36 @@ def capture_payment(request, lease_id, for_month):
             try:
                 payment.save()
 
-                tenant_email = getattr(getattr(lease.user, 'tenant', None), 'email', None)
+                # Resolve tenant email correctly: Lease.user is a TenantProfile (with .user -> CustomUser)
+                tenant_email = None
+                tenant_name = None
+                tenant_profile = getattr(lease, 'user', None)
+                if tenant_profile is not None:
+                    user_obj = getattr(tenant_profile, 'user', None) or tenant_profile
+                    tenant_email = getattr(user_obj, 'email', None)
+                    if hasattr(user_obj, 'get_full_name'):
+                        try:
+                            tenant_name = user_obj.get_full_name()
+                        except Exception:
+                            tenant_name = None
+                    if not tenant_name:
+                        tenant_name = getattr(user_obj, 'username', str(user_obj))
+
                 if tenant_email:
-                    send_mail(
-                        subject="Payment Confirmation",
-                        message=(
-                            f"Dear {lease.user.user.get_full_name()},\n\n"  # type: ignore
-                            f"Your payment of R{payment.amount} for {payment.for_month} has been received.\n\n"
-                            f"Thank you."
-                        ),
-                        from_email=None,
-                        recipient_list=[tenant_email],
-                        fail_silently=True,
-                    )
+                    try:
+                        send_mail(
+                            subject="Payment Confirmation",
+                            message=(
+                                f"Dear {tenant_name},\n\n"
+                                f"Your payment of R{payment.amount} for {payment.for_month} has been received.\n\n"
+                                f"Thank you."
+                            ),
+                            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', None),
+                            recipient_list=[tenant_email],
+                            fail_silently=False,
+                        )
+                    except Exception as e:
+                        logger.exception("Failed to send payment confirmation email: %s", e)
 
                 if request.htmx:
                     return HttpResponse("""
@@ -465,6 +482,9 @@ def capture_payment(request, lease_id, for_month):
         'for_month': for_month,
     }, request=request)
     return HttpResponse(html)
+    return HttpResponse(html)
+
+
 @login_required
 def register_property_owner(request):
     if request.method == 'POST':
