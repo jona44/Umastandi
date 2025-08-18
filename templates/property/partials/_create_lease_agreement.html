@@ -1,27 +1,25 @@
-{% load crispy_forms_tags %}
 {% load i18n %}
 
-<div class="container mt-1" >
-    <h3 class="mb-2 text-center bg-primary text-white p-3">
+<div class="container mt-1">
+    <h3 class="mb-2 text-center bg-primary text-white p-3 rounded">
         <i class="bi bi-file-earmark-text me-2"></i>
         {% trans "Create Lease Agreement" %}
     </h3>
     <p class="text-center mb-2">
-        {% trans "Please fill in the details below to create a lease agreement." %} for: <strong>{{ tenant }}</strong> 
+        {% trans "Please fill in the details below to create a lease agreement." %} 
+        {% trans "for:" %} <strong><span class="text-info">{{ tenant }}</span></strong> 
     </p> 
-    
-    {% if form.errors %}
+
+    {% if form.non_field_errors %}
         <div class="alert alert-danger">
-            <ul>
-                {% for field, errors in form.errors.items %}
-                    {% for error in errors %}
-                        <li>{{ field.label }}: {{ error }}</li>
-                    {% endfor %}
+            <ul class="mb-0">
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
                 {% endfor %}
             </ul>
         </div>
     {% endif %}
-    
+
     <div class="row justify-content-center">
         <div class="col">
             <form 
@@ -34,7 +32,79 @@
                 {% endif %}
                 id="lease-form">
                 {% csrf_token %}
-                {{ form|crispy }}
+
+<!-- Property -->
+                <div class="mb-3">
+                    <label for="id_property" class="form-label fw-semibold">{% trans "Property" %}</label>
+                    {{ form.property }}
+                    {% if form.property.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.property.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+<!-- Lease Start -->
+                <div class="d-flex gap-3">
+                    <div class=" col mb-3">
+                        <label for="id_lease_start" class="form-label fw-semibold">{% trans "Lease Start Date" %}</label>
+                        {{ form.lease_start }}
+                        {% if form.lease_start.errors %}
+                            <div class="invalid-feedback d-block">
+                            {{ form.lease_start.errors }}
+                        </div>
+                    {% endif %}
+                    </div>
+
+<!-- Lease End -->
+                    <div class=" col mb-3">
+                    <label for="id_lease_end" class="form-label fw-semibold">{% trans "Lease End Date" %}</label>
+                    {{ form.lease_end }}
+                    {% if form.lease_end.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.lease_end.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                </div>
+                
+
+            
+
+<!-- Rent Amount -->
+ <div class="d-flex gap-3">
+                <div class=" col mb-3">
+                    <label for="id_rent_amount" class="form-label fw-semibold">{% trans "Rent Amount" %}</label>
+                    {{ form.rent_amount }}
+                    {% if form.rent_amount.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.rent_amount.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Security Deposit -->
+                <div class=" col mb-3">
+                    <label for="id_security_deposit" class="form-label fw-semibold">{% trans "Security Deposit" %}</label>
+                    {{ form.security_deposit }}
+                    {% if form.security_deposit.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.security_deposit.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+</div>
+                <!-- Terms -->
+                <div class="mb-3">
+                    <label for="id_terms" class="form-label fw-semibold">{% trans "Lease Terms" %}</label>
+                    {{ form.terms }}
+                    {% if form.terms.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.terms.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit -->
                 <button type="submit" class="btn btn-primary w-100 mt-3">
                     <i class="bi bi-plus-circle me-2"></i>
                     {% trans "Create Lease Agreement" %}

@@ -1,8 +1,7 @@
 <!-- templates/customuser/partials/tenant_profile_form.html -->
-
 {% load crispy_forms_tags %}
 
-<h3 class="text-info"> "Tenant Profile" </h3>
+<h3 class="text-info">Tenant Profile</h3>
 
 <div class="modal-body">
     <form method="POST" 
@@ -11,7 +10,65 @@
         hx-target="#tables"
         hx-swap="innerHTML">
         {% csrf_token %}
-        {{ form|crispy }}
+
+        <!-- Image -->
+    <div class="mb-3 bg-primary p-3 rounded">
+        <label for="id_image" class="form-label fw-semibold text-secondary">
+            <span class="text-info">Profile Image for {{ user.get_full_name }}</span>
+        </label>
+        <div class="input-group">
+            {{ form.image }}
+        </div>
+        {% if form.image.errors %}
+            <div class="invalid-feedback d-block">
+            {{ form.image.errors }}
+            </div>
+        {% endif %}
+        <div class="form-text text-muted">
+            Upload a clear headshot or ID photo.
+        </div>
+    </div>
+
+
+        <!-- Occupation -->
+        <div class="mb-3">
+            <label for="id_occupation" class="form-label">Occupation</label>
+            {{ form.occupation }}
+            {% if form.occupation.errors %}
+                <div class="text-danger small">{{ form.occupation.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="d-flex gap-3">
+           <div class=" col mb-3">
+            <label for="id_phone_number" class="form-label">Phone Number</label>
+            {{ form.phone_number }}
+            {% if form.phone_number.errors %}
+                <div class="text-danger small">{{ form.phone_number.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- National ID -->
+        <div class=" col mb-3">
+            <label for="id_national_id" class="form-label">National ID</label>
+            {{ form.national_id }}
+            {% if form.national_id.errors %}
+                <div class="text-danger small">{{ form.national_id.errors }}</div>
+            {% endif %}
+        </div>  
+        </div>
+        <!-- Phone Number -->
+       
+
+        <!-- Last Address -->
+        <div class="mb-3">
+            <label for="id_last_address" class="form-label">Last Address</label>
+            {{ form.last_address }}
+            {% if form.last_address.errors %}
+                <div class="text-danger small">{{ form.last_address.errors }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Submit -->
         <button type="submit" class="btn btn-primary">Save Profile</button>
     </form>
 </div>

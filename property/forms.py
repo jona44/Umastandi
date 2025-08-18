@@ -17,7 +17,7 @@ class PropertyForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'property_owner': forms.Select(attrs={'class': 'form-control'}),
-            'address': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+            'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'type': forms.Select(attrs={'class': 'form-control'}),
             'details': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'bedrooms': forms.NumberInput(attrs={'class': 'form-control'}),

@@ -5,11 +5,17 @@ from property.models import TenantProfile
 
 
 class CustomUserRegistrationForm(forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput)
+    
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'first_name', 'last_name',  'password']
+        fields = ['email', 'first_name', 'last_name']
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            
+        }
 
     def clean_user_type(self):
         user_type = self.cleaned_data['user_type']

@@ -396,6 +396,7 @@ def lease_agreement_detail(request, tenant_profile_id):
     return render(request, 'property/lease_agreement_detail.html', {
         'lease': lease,
         'payments': payments,
+        'tenant_profile': tenant_profile
     })
 
 

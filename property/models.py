@@ -70,18 +70,18 @@ class Issue(models.Model):
     ]
     ISSUE_TYPE_CHOICES = [('electrical', 'Electrical'),('plumbing', 'Plumbing'),('painting', 'Painting'),('windows', 'Windows '),('doors', 'Doors'),('other', 'Other'),]
     
-    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
+    priority    = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
     assigned_to = models.ForeignKey('PropertyManager', on_delete=models.SET_NULL, null=True, blank=True)
-    user = models.ForeignKey('TenantProfile', on_delete=models.CASCADE, related_name='issues')
-    property = models.ForeignKey('Property', on_delete=models.CASCADE, related_name='issues')
-    issue_type = models.CharField(max_length=255, choices=ISSUE_TYPE_CHOICES, default='other', null=True, blank=True)
+    user        = models.ForeignKey('TenantProfile', on_delete=models.CASCADE, related_name='issues')
+    property    = models.ForeignKey('Property', on_delete=models.CASCADE, related_name='issues')
+    issue_type  = models.CharField(max_length=255, choices=ISSUE_TYPE_CHOICES, default='other', null=True, blank=True)
     description = models.TextField()
-    image = models.ImageField(upload_to='issue_images/', null=True, blank=True)  # optional legacy
-    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='open')
-    resolved_at = models.DateTimeField(null=True, blank=True)
+    image       = models.ImageField(upload_to='issue_images/', null=True, blank=True)  # optional legacy
+    status      = models.CharField(max_length=255, choices=STATUS_CHOICES, default='open')
+    resolved_at      = models.DateTimeField(null=True, blank=True)
     resolution_notes = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,
+    created_at       = models.DateTimeField(auto_now_add=True)
+    cost             = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,
         validators=[MinValueValidator(Decimal('0.00'))],
         help_text="Cost of servicing the issue (in Rands)")
 

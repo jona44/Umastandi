@@ -40,7 +40,6 @@ def register_tenant(request):
             user = form.save(commit=False)
             user.created_by = request.user
             user.user_type = 'tenant'
-            user.set_password(form.cleaned_data['password'])
             user.save()
 
             activation_link = request.build_absolute_uri(
@@ -195,7 +194,6 @@ def create_manager(request):
             user = form.save(commit=False)
             user.created_by = request.user if request.user.is_authenticated else None
             user.user_type = 'manager'
-            user.set_password(form.cleaned_data['password'])
             user.save()
 
             PropertyManager.objects.create(user=user)

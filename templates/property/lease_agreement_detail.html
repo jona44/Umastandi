@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container mt-5">
-    <h2>
+    <h2 class="bg-primary text-white p-3 rounded">
         <i class="bi bi-file-earmark-text"></i>
-        Lease Details for {{ lease.tenant.tenant.email }}
+        Lease Details for: <span class="text-info">{{ tenant_profile }}</span>
     </h2>
 
     <ul class="list-group mb-4">

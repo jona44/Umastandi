@@ -114,7 +114,7 @@
             <tr id="issue-{{ issue.id }}">
                 <td class="fw-bold">#{{ issue.id }}</td>
                 <td>{{ issue.property.name }}</td>
-                <td>{{ issue.tenant|default:"<em class='text-muted'>No tenant</em>" }}</td>
+                <td>{{ issue.user|default:"<em class='text-muted'>No user</em>" }}</td>
                 <td>
                     {% if issue.status == 'open' %}
                         <span class="badge bg-danger">
