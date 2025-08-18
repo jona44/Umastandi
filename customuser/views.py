@@ -1,4 +1,3 @@
-
 import logging
 from datetime import date
 from django.conf import settings
@@ -163,6 +162,7 @@ def tenant_list(request):
         return HttpResponse(html)
         
     return render(request, 'customuser/partials/_tenant_list.html', context)
+
 
 @login_required
 def delete_tenant_profile(request, user_id):
@@ -346,5 +346,54 @@ def deactivate_user(request, user_id):
         })
 
     return HttpResponseBadRequest("Invalid request method.")
+
+
+@require_http_methods(["POST"])
+@login_required
+def resend_activation_email(request, user_id):
+    """
+    Resend activation email for a non-active user (generates token if missing).
+    Expects POST. Returns HTMX fragment if request.htmx is true, otherwise redirects.
+    """
+    user = get_object_or_404(CustomUser, id=user_id)
+
+    if user.is_active:
+        message = "Account is already active."
+        messages.info(request, message)
+        if request.htmx:
+            return render(request, 'customuser/partials/_info_message.html', {'message': message})
+        return redirect('login')
+
+    # Ensure activation token exists
+    if not getattr(user, 'activation_token', None):
+        import uuid
+        user.activation_token = uuid.uuid4().hex
+        user.save(update_fields=['activation_token'])
+
+    activation_link = request.build_absolute_uri(
+        reverse('activate_account', args=[user.activation_token])
+    )
+
+    try:
+        send_mail(
+            subject='Activate Your Account',
+            message=f'Click the link to activate your account: {activation_link}',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+    except Exception:
+        logger.exception("Failed to resend activation email for user id %s", user_id)
+        if request.htmx:
+            return render(request, 'customuser/partials/_error_message.html', {
+                'message': "Failed to send activation email. Please try again later."
+            }, status=500)
+        return HttpResponseServerError("Failed to send activation email.")
+
+    msg = "Activation email resent."
+    messages.success(request, msg)
+    if request.htmx:
+        return render(request, 'customuser/partials/_success_message.html', {'message': msg})
+    return redirect('tenant_list')
 
 

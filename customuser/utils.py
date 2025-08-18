@@ -1,13 +1,7 @@
 from django.shortcuts import redirect
 from django.urls import reverse
 
-# def get_dashboard_redirect(user):
-#     if user.user_type == 'tenant':
-#         return redirect('tenant_dashboard')  # Replace with your actual URL name
-#     elif user.user_type == 'manager':
-#         return redirect('manager_dashboard')
-#     else:
-#         return redirect('home')  # Fallback
+
     
 def get_dashboard_redirect(user):
     """

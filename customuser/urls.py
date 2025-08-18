@@ -9,6 +9,7 @@ urlpatterns = [
     path('manager/edit_manager/<int:manager_id>/', views.edit_manager, name='edit_manager'),
     path('manager_profile/<int:user_id>/', views.manager_profile, name='manager_profile'),
     path('activate-lease/', views.activate_lease, name='activate_lease'),
+    path('resend_activation_email/<int:user_id>/', views.resend_activation_email, name='resend_activation_email'),
     path('logout/', views.logout_view, name='logout'),
     path('tenant-profile/<int:user_id>/create/', views.create_tenant_profile, name='create_tenant_profile'),
     path('tenant-profile/<int:user_id>/edit/', views.update_tenant_profile, name='update_tenant_profile'),
@@ -18,6 +19,5 @@ urlpatterns = [
     path('tenant/<int:user_id>/deactivate/', views.deactivate_user, name='deactivate_user'),
     path('redirect-after-login/', views.redirect_after_login, name='redirect_after_login'),
 
-  
 ]   
 
