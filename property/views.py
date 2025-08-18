@@ -131,12 +131,14 @@ def log_issue(request):
             issue.property = property_instance
             issue.save()
 
-            # ✅ Save uploaded media files
+            # Save uploaded media files
             for f in request.FILES.getlist('media_files'):
                 IssueMedia.objects.create(issue=issue, file=f)
 
             if request.htmx:
-                return HttpResponse('<script>window.location.reload()</script>')
+                issues = tenant.issues.all().order_by("-created_at")  # assuming related_name="issues"
+                return render(request, 'property/partials/_issue_success.html', {"issues": issues})
+
             messages.success(request, "Your issue has been logged successfully.")
             return redirect('tenant_dashboard')
     else:
@@ -144,10 +146,10 @@ def log_issue(request):
 
     context = {'form': form}
     if request.htmx:
-        html = render_to_string('property/partials/_log_issue.html')
-        return HttpResponse(html)
+        return render(request, 'property/partials/_log_issue.html', context)
 
     return render(request, 'property/log_issue.html', context)
+
 
 
 # ----------------------------------Issue history view--------------------------------
@@ -555,4 +557,4 @@ def delete_property_owner(request, owner_id):
 @login_required
 def property_owner_detail(request, owner_id):
     owner = get_object_or_404(PropertyOwner, id=owner_id)
-    return render(request, 'property/property_owner_detail.html', {'owner': owner})
+    return render(request, 'property/_property_owner_detail.html', {'owner': owner})

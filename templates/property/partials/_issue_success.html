@@ -1,0 +1,11 @@
+<div class="alert alert-success text-center" role="alert">
+    <i class="bi bi-check-circle-fill"></i>
+    Your issue has been logged successfully. Redirecting to your dashboard...
+</div>
+
+<script>
+    setTimeout(function () {
+        window.location.href = "{% url 'tenant_dashboard' %}";
+    }, 3000); // ⏳ 3 seconds
+</script>
+

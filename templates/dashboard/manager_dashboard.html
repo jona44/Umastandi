@@ -117,6 +117,14 @@
             hx-swap="innerHTML">
             <i class="bi bi-person-plus"></i> Add Manager
         </button>
+        <button 
+            class="btn btn-success btn-sm mt-2" 
+            hx-get="{% url 'property_owner_list' %}" 
+            hx-target="#tables"
+            hx-trigger="click"
+            hx-swap="innerHTML">
+            <i class="bi bi-person-plus"></i> Umastandi
+        </button>
     </div>
         
     <!------------------------------------------ Recent Issues Table--------------------------------->

@@ -1,0 +1,26 @@
+
+<!-- log issue form modal by the tenant -->
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+
+            <div class="modal-body">
+                <form method="post" 
+                    enctype="multipart/form-data" 
+                    hx-post="{% url 'log_issue' %}" 
+                    hx-target="#tenant-container" 
+                    hx-swap="innerHTML">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="mb-3">
+                        <label for="media_files" class="form-label">Upload Additional Media</label>
+                        <input type="file" name="media_files" class="form-control" multiple>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary mt-2">
+                        <i class="bi bi-send"></i> Submit Issue
+                    </button>
+                    <button type="button" class="btn btn-secondary mt-2">Cancel</button>
+                </form>
+            </div>

@@ -21,7 +21,7 @@
         <thead class="table-dark">
             <tr>
                 <th><i class="bi bi-person-circle"></i> ID</th>
-                <th><i class="bi bi-person-circle"></i> Profile Image</th>
+                <th><i class="bi bi-person-circle"></i> Email</th>
                 <th><i class="bi bi-person-badge"></i> Tenant Name</th>
                 <th><i class="bi bi-telephone"></i> Phone Number</th>
                 <th><i class="bi bi-card-text"></i> National ID</th>
@@ -33,11 +33,7 @@
             <tr>
                 <td>{{ tenant.user.id }}</td>
                 <td>
-                    {% if tenant.image %}
-                    <img src="{{ tenant.image.url }}" alt="Image" width="50" height="50" class="rounded-circle">
-                    {% else %}
-                    <span class="text-muted"><i class="bi bi-person-x"></i> No Image</span>
-                    {% endif %}
+                    {{ tenant.user.email }}"
                 </td>
                 <td>{{ tenant.user }}</td>
                 <td>
